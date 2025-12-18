@@ -64,7 +64,7 @@
             </a>
             
 
-            <a href="#" class="account-card">
+            <a href="#" class="account-card" onclick="handleSignOut(event)">
                 <i class="fa-solid fa-right-from-bracket"></i>
                 <div class="card-content">
                     <h3>Sign Out</h3>
@@ -75,7 +75,16 @@
         </div>
     </main>
 
+    <script src="api.js"></script>
     <script src="consumer_home.js"></script>
+    <script>
+        function handleSignOut(event) {
+            event.preventDefault();
+            if (confirm('Are you sure you want to sign out?')) {
+                logout();
+            }
+        }
+    </script>
     <div id="modal-overlay" class="hidden"></div>
 
     <div id="profile-modal" class="modal-drawer">

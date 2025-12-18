@@ -1,5 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     
+    // Check for logout message
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');
+    const messageDiv = document.getElementById('login-message');
+    
+    if (message === 'login-to-continue' && messageDiv) {
+        messageDiv.style.display = 'block';
+        // Auto-hide message after 5 seconds
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 5000);
+    }
+    
     // Get the elements
     const buyerButton = document.getElementById('btn-buyer');
     const sellerButton = document.getElementById('btn-seller');
