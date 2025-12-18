@@ -5,6 +5,11 @@ const getBackendURL = () => {
   
   console.log('[API] Current hostname:', currentHost);
   
+  // Production deployment (Vercel)
+  if (currentHost.includes('vercel.app') || currentHost.includes('ecoshelf')) {
+    return `${window.location.origin}/api`;
+  }
+  
   // If accessing via IP address, use the same IP for backend
   if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
     const backendUrl = `http://${currentHost}:5000/api`;
