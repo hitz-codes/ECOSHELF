@@ -72,8 +72,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <h3>${product.name}</h3>
                         <p class="product-brand">by ${product.seller_name}</p>
                         <div class="product-price">
-                            <span class="price-old">$${product.original_price.toFixed(2)}</span>
-                            <span class="price-new">$${product.discounted_price.toFixed(2)}</span>
+                            <span class="price-old">₹${product.original_price.toFixed(2)}</span>
+                            <span class="price-new">₹${product.discounted_price.toFixed(2)}</span>
                         </div>
                         <p class="product-quantity">Stock: ${product.quantity}</p>
                         <button class="add-to-cart-btn" onclick="alert('Product: ${product.name}')">

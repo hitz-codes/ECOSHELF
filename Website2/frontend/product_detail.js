@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <span>${item.quantity}</span>
                             <button onclick="updateQuantity('${item.id}', ${item.quantity + 1})">+</button>
                         </div>
-                        <p class="item-total">$${itemTotal.toFixed(2)}</p>
+                        <p class="item-total">₹${itemTotal.toFixed(2)}</p>
                         <button class="remove-item-btn" onclick="removeFromCart('${item.id}')">Remove</button>
                     </div>
                 `;
