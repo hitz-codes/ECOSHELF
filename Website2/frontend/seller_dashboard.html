@@ -189,8 +189,299 @@
             </section>
             
             <section id="settings" class="content-section">
-                <h2>Settings</h2>
-                <p>Manage your account and payment details here.</p>
+                <h2><i class="fa-solid fa-gear"></i> Settings</h2>
+                
+                <!-- Settings Navigation Tabs -->
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-tab="account">
+                        <i class="fa-solid fa-user"></i> Account
+                    </button>
+                    <button class="settings-tab" data-tab="business">
+                        <i class="fa-solid fa-store"></i> Business
+                    </button>
+                    <button class="settings-tab" data-tab="notifications">
+                        <i class="fa-solid fa-bell"></i> Notifications
+                    </button>
+                    <button class="settings-tab" data-tab="payment">
+                        <i class="fa-solid fa-credit-card"></i> Payment
+                    </button>
+                </div>
+
+                <!-- Account Settings -->
+                <div id="account-settings" class="settings-content active">
+                    <div class="settings-card">
+                        <h3><i class="fa-solid fa-user-circle"></i> Personal Information</h3>
+                        <form class="settings-form">
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="seller-name">Full Name</label>
+                                    <input type="text" id="seller-name" value="John Seller" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="seller-email">Email Address</label>
+                                    <input type="email" id="seller-email" value="seller@example.com" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="seller-phone">Phone Number</label>
+                                    <input type="tel" id="seller-phone" value="+91 9876543210" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="seller-location">Location</label>
+                                    <input type="text" id="seller-location" value="Mumbai, Maharashtra" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="save-btn">
+                                <i class="fa-solid fa-save"></i> Save Changes
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3><i class="fa-solid fa-lock"></i> Security</h3>
+                        <div class="security-options">
+                            <div class="security-item">
+                                <div class="security-info">
+                                    <h4>Change Password</h4>
+                                    <p>Update your account password for better security</p>
+                                </div>
+                                <button class="action-btn">
+                                    <i class="fa-solid fa-key"></i> Change
+                                </button>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-info">
+                                    <h4>Two-Factor Authentication</h4>
+                                    <p>Add an extra layer of security to your account</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Settings -->
+                <div id="business-settings" class="settings-content">
+                    <div class="settings-card">
+                        <h3><i class="fa-solid fa-store"></i> Store Information</h3>
+                        <form class="settings-form">
+                            <div class="input-group">
+                                <label for="store-name">Store Name</label>
+                                <input type="text" id="store-name" value="Fresh Foods Market" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="store-description">Store Description</label>
+                                <textarea id="store-description" rows="4" placeholder="Tell customers about your store...">We provide fresh, quality products at great prices. Specializing in near-expiry items to reduce food waste.</textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="business-type">Business Type</label>
+                                    <select id="business-type">
+                                        <option value="individual">Individual Seller</option>
+                                        <option value="small-business">Small Business</option>
+                                        <option value="grocery-store">Grocery Store</option>
+                                        <option value="restaurant">Restaurant</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="gst-number">GST Number (Optional)</label>
+                                    <input type="text" id="gst-number" placeholder="Enter GST number">
+                                </div>
+                            </div>
+                            <button type="submit" class="save-btn">
+                                <i class="fa-solid fa-save"></i> Save Changes
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3><i class="fa-solid fa-clock"></i> Operating Hours</h3>
+                        <div class="operating-hours">
+                            <div class="day-schedule">
+                                <span class="day">Monday - Friday</span>
+                                <div class="time-inputs">
+                                    <input type="time" value="09:00"> - <input type="time" value="18:00">
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="day-schedule">
+                                <span class="day">Saturday</span>
+                                <div class="time-inputs">
+                                    <input type="time" value="10:00"> - <input type="time" value="16:00">
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="day-schedule">
+                                <span class="day">Sunday</span>
+                                <div class="time-inputs">
+                                    <input type="time" value="10:00"> - <input type="time" value="14:00">
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Settings -->
+                <div id="notifications-settings" class="settings-content">
+                    <div class="settings-card">
+                        <h3><i class="fa-solid fa-bell"></i> Notification Preferences</h3>
+                        <div class="notification-options">
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>Order Notifications</h4>
+                                    <p>Get notified when you receive new orders</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>Low Stock Alerts</h4>
+                                    <p>Receive alerts when product stock is running low</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>Expiry Warnings</h4>
+                                    <p>Get notified about products nearing expiry</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>Marketing Updates</h4>
+                                    <p>Receive tips and updates about selling on EcoShelf</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3><i class="fa-solid fa-mobile-screen"></i> Notification Methods</h3>
+                        <div class="notification-methods">
+                            <div class="method-item">
+                                <i class="fa-solid fa-envelope"></i>
+                                <span>Email Notifications</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="method-item">
+                                <i class="fa-solid fa-message"></i>
+                                <span>SMS Notifications</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="method-item">
+                                <i class="fa-solid fa-bell"></i>
+                                <span>Push Notifications</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Settings -->
+                <div id="payment-settings" class="settings-content">
+                    <div class="settings-card">
+                        <h3><i class="fa-solid fa-university"></i> Bank Account Details</h3>
+                        <form class="settings-form">
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="account-holder">Account Holder Name</label>
+                                    <input type="text" id="account-holder" value="John Seller" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="account-number">Account Number</label>
+                                    <input type="text" id="account-number" value="****1234" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="ifsc-code">IFSC Code</label>
+                                    <input type="text" id="ifsc-code" value="HDFC0001234" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="bank-name">Bank Name</label>
+                                    <input type="text" id="bank-name" value="HDFC Bank" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="save-btn">
+                                <i class="fa-solid fa-save"></i> Update Bank Details
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3><i class="fa-solid fa-chart-line"></i> Payout Settings</h3>
+                        <div class="payout-options">
+                            <div class="payout-item">
+                                <div class="payout-info">
+                                    <h4>Automatic Payouts</h4>
+                                    <p>Receive payments automatically every week</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="payout-schedule">
+                                <label for="payout-day">Payout Day</label>
+                                <select id="payout-day">
+                                    <option value="monday">Monday</option>
+                                    <option value="tuesday">Tuesday</option>
+                                    <option value="wednesday">Wednesday</option>
+                                    <option value="thursday">Thursday</option>
+                                    <option value="friday" selected>Friday</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="payout-summary">
+                            <div class="summary-item">
+                                <span>Pending Balance</span>
+                                <strong>₹1,250.00</strong>
+                            </div>
+                            <div class="summary-item">
+                                <span>Next Payout</span>
+                                <strong>Friday, Nov 8</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
         </main>

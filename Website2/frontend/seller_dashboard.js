@@ -514,3 +514,92 @@ window.addEventListener('resize', () => {
     if (categoryChart) categoryChart.resize();
     if (revenueChart) revenueChart.resize();
 });
+
+// ======== SETTINGS TAB FUNCTIONALITY ========
+
+// Handle settings tab switching
+document.addEventListener('DOMContentLoaded', () => {
+    const settingsTabs = document.querySelectorAll('.settings-tab');
+    const settingsContents = document.querySelectorAll('.settings-content');
+
+    settingsTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetTab = tab.getAttribute('data-tab');
+            
+            // Remove active class from all tabs and contents
+            settingsTabs.forEach(t => t.classList.remove('active'));
+            settingsContents.forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            tab.classList.add('active');
+            const targetContent = document.getElementById(`${targetTab}-settings`);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        });
+    });
+
+    // Handle form submissions
+    const settingsForms = document.querySelectorAll('.settings-form');
+    settingsForms.forEach(form => {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            showSettingsSaveMessage();
+        });
+    });
+});
+
+// Show save confirmation message
+function showSettingsSaveMessage() {
+    // Create temporary message
+    const message = document.createElement('div');
+    message.className = 'save-message';
+    message.innerHTML = '<i class="fa-solid fa-check-circle"></i> Settings saved successfully!';
+    message.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #27ae60;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(message);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        message.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => message.remove(), 300);
+    }, 3000);
+}
+
+// Add animation styles
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
