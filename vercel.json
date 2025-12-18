@@ -1,17 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "Website2/frontend/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "Website2/frontend/$1"
-    }
-  ],
+  "buildCommand": "echo 'No build needed for static files'",
+  "outputDirectory": "Website2/frontend",
   "headers": [
     {
       "source": "/(.*)",
