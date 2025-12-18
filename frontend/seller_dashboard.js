@@ -220,3 +220,297 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadDashboardStats();
     loadMyProducts();
 });
+
+// ======== ENHANCED DASHBOARD WITH CHARTS ========
+
+// Chart instances
+let categoryChart = null;
+let revenueChart = null;
+
+// Enhanced dashboard stats loading with animations
+async function loadDashboardStatsEnhanced() {
+    try {
+        // Show loading animation
+        showLoadingStats();
+        
+        const response = await fetch(`${API_BASE_URL}/users/seller/dashboard`, {
+            headers: {
+                'Authorization': `Bearer ${getAuthToken()}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch dashboard stats');
+        }
+
+        const data = await response.json();
+        const stats = data.stats;
+
+        // Update stats with animation
+        animateStatUpdate('stat-total-listings', stats.total_listings || 0);
+        animateStatUpdate('stat-items-sold', stats.items_sold_24h || 0);
+        animateStatUpdate('stat-total-revenue', `₹${(stats.total_revenue || 0).toFixed(2)}`);
+        animateStatUpdate('stat-nearing-expiry', stats.nearing_expiry || 0);
+
+        // Load charts
+        await loadCharts(stats);
+        
+        // Load recent activity
+        loadRecentActivity();
+
+    } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+        showStatsError();
+    }
+}
+
+// Show loading animation for stats
+function showLoadingStats() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach(stat => {
+        stat.classList.add('loading');
+        stat.textContent = '...';
+    });
+}
+
+// Animate stat number updates
+function animateStatUpdate(elementId, finalValue) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    element.classList.remove('loading');
+    
+    // If it's a number, animate the counting
+    if (typeof finalValue === 'number' || (typeof finalValue === 'string' && finalValue.match(/^\d+$/))) {
+        const startValue = 0;
+        const duration = 1000;
+        const startTime = performance.now();
+        
+        function updateNumber(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function for smooth animation
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const currentValue = Math.floor(startValue + (finalValue - startValue) * easeOutQuart);
+            
+            element.textContent = currentValue;
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateNumber);
+            } else {
+                element.textContent = finalValue;
+            }
+        }
+        
+        requestAnimationFrame(updateNumber);
+    } else {
+        // For non-numeric values (like currency), just set directly
+        element.textContent = finalValue;
+    }
+}
+
+// Load and create charts
+async function loadCharts(stats) {
+    await Promise.all([
+        createCategoryChart(stats),
+        createRevenueChart(stats)
+    ]);
+}
+
+// Create category pie chart
+async function createCategoryChart(stats) {
+    const ctx = document.getElementById('categoryChart');
+    if (!ctx) return;
+
+    // Destroy existing chart
+    if (categoryChart) {
+        categoryChart.destroy();
+    }
+
+    // Sample data - in real app, fetch from API
+    const categoryData = {
+        labels: ['Normal', 'Seasonal', 'Derived'],
+        datasets: [{
+            data: [45, 35, 20],
+            backgroundColor: [
+                '#3498db',
+                '#27ae60',
+                '#f39c12'
+            ],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    };
+
+    categoryChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: categoryData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            },
+            animation: {
+                animateRotate: true,
+                duration: 1000
+            }
+        }
+    });
+}
+
+// Create revenue line chart
+async function createRevenueChart(stats) {
+    const ctx = document.getElementById('revenueChart');
+    if (!ctx) return;
+
+    // Destroy existing chart
+    if (revenueChart) {
+        revenueChart.destroy();
+    }
+
+    // Sample data for last 7 days
+    const last7Days = [];
+    const revenueData = [];
+    
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        last7Days.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+        revenueData.push(Math.floor(Math.random() * 200) + 50); // Sample data
+    }
+
+    const chartData = {
+        labels: last7Days,
+        datasets: [{
+            label: 'Revenue (₹)',
+            data: revenueData,
+            borderColor: '#561C24',
+            backgroundColor: 'rgba(86, 28, 36, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#561C24',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 6
+        }]
+    };
+
+    revenueChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '₹' + value;
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+}
+
+// Load recent activity
+function loadRecentActivity() {
+    const activityList = document.getElementById('activity-list');
+    if (!activityList) return;
+
+    // Sample activity data
+    const activities = [
+        {
+            type: 'sale',
+            icon: 'fa-cart-shopping',
+            message: 'Sold 2x Fresh Milk',
+            time: '2 hours ago'
+        },
+        {
+            type: 'product',
+            icon: 'fa-plus',
+            message: 'Added new product: Organic Mangoes',
+            time: '5 hours ago'
+        },
+        {
+            type: 'warning',
+            icon: 'fa-clock',
+            message: 'Product "Bread Loaf" expires tomorrow',
+            time: '1 day ago'
+        }
+    ];
+
+    if (activities.length === 0) {
+        activityList.innerHTML = '<p class="no-activity">No recent activity</p>';
+        return;
+    }
+
+    activityList.innerHTML = activities.map(activity => `
+        <div class="activity-item">
+            <div class="activity-icon ${activity.type}">
+                <i class="fa-solid ${activity.icon}"></i>
+            </div>
+            <div class="activity-content">
+                <p>${activity.message}</p>
+                <span class="activity-time">${activity.time}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Show error state for stats
+function showStatsError() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach(stat => {
+        stat.classList.remove('loading');
+        stat.textContent = '--';
+    });
+}
+
+// Initialize enhanced dashboard on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Load enhanced dashboard stats when dashboard section is active
+    if (document.getElementById('dashboard').classList.contains('active')) {
+        loadDashboardStatsEnhanced();
+    }
+    
+    // Override the original loadDashboardStats function
+    window.loadDashboardStats = loadDashboardStatsEnhanced;
+});
+
+// Refresh charts when window is resized
+window.addEventListener('resize', () => {
+    if (categoryChart) categoryChart.resize();
+    if (revenueChart) revenueChart.resize();
+});

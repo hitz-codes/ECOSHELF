@@ -6,6 +6,7 @@
     <title>Seller Dashboard - EcoMart</title>
     <link rel="stylesheet" href="seller_dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -31,22 +32,68 @@
 
             <section id="dashboard" class="content-section active">
                 <h2>Dashboard Summary</h2>
+                
+                <!-- Enhanced Stats Cards -->
                 <div class="stat-grid">
-                    <div class="stat-card">
-                        <h3>Total Listings</h3>
-                        <p>12</p>
+                    <div class="stat-card stat-primary">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Total Listings</h3>
+                            <p class="stat-number" id="stat-total-listings">0</p>
+                            <span class="stat-label">Active Products</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>Items Sold (24h)</h3>
-                        <p>4</p>
+                    <div class="stat-card stat-success">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Items Sold (24h)</h3>
+                            <p class="stat-number" id="stat-items-sold">0</p>
+                            <span class="stat-label">Last 24 Hours</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>Total Revenue</h3>
-                        <p>$350.00</p>
+                    <div class="stat-card stat-revenue">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Total Revenue</h3>
+                            <p class="stat-number" id="stat-total-revenue">₹0.00</p>
+                            <span class="stat-label">All Time Earnings</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>Nearing Expiry</h3>
-                        <p>3</p>
+                    <div class="stat-card stat-warning">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Nearing Expiry</h3>
+                            <p class="stat-number" id="stat-nearing-expiry">0</p>
+                            <span class="stat-label">Within 3 Days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-chart-pie"></i> Sales by Category</h3>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-chart-line"></i> Revenue Trend (Last 7 Days)</h3>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="recent-activity">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
+                    <div id="activity-list" class="activity-list">
+                        <p class="no-activity">No recent activity</p>
                     </div>
                 </div>
             </section>
