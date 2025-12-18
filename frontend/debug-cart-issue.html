@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Cart Issue</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        .product-card { border: 1px solid #ccc; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .add-to-cart-btn { background: #28a745; }
+    </style>
+</head>
+<body>
+    <h1>🐛 Debug Cart Issue</h1>
+    
+    <div class="test-section">
+        <h3>Step 1: Check Authentication</h3>
+        <div id="auth-check"></div>
+        <button onclick="checkAuth()">Check Auth</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 2: Load Products</h3>
+        <div id="products-check"></div>
+        <button onclick="loadTestProducts()">Load Products</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 3: Test Add to Cart</h3>
+        <div id="cart-test"></div>
+        <div id="test-products-display"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 4: Check Cart Status</h3>
+        <div id="cart-status"></div>
+        <button onclick="checkCart()">Check Cart</button>
+        <button onclick="clearTestCart()">Clear Cart</button>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        // Test cart
+        let testCart = JSON.parse(localStorage.getItem('cart')) || [];
+        let testProducts = [];
+        
+        function checkAuth() {
+            const div = document.getElementById('auth-check');
+            const token = getAuthToken();
+            const user = getUser();
+            
+            if (!token) {
+                div.innerHTML = '<span class="error">❌ No auth token - please login first</span>';
+                return false;
+            }
+            
+            if (!user || user.role !== 'buyer') {
+                div.innerHTML = '<span class="error">❌ Not logged in as buyer</span>';
+                return false;
+            }
+            
+            div.innerHTML = `<span class="success">✅ Logged in as: ${user.name} (${user.role})</span>`;
+            return true;
+        }
+        
+        async function loadTestProducts() {
+            const div = document.getElementById('products-check');
+            const displayDiv = document.getElementById('test-products-display');
+            
+            try {
+                div.innerHTML = '<span class="info">Loading products...</span>';
+                
+                const data = await API.getProducts({ limit: 3 });
+                testProducts = data.products;
+                
+                div.innerHTML = `<span class="success">✅ Loaded ${testProducts.length} products</span>`;
+                
+                // Display products with test buttons
+                displayDiv.innerHTML = testProducts.map((product, index) => `
+                    <div class="product-card">
+                        <h4>${product.name}</h4>
+                        <p>Price: $${product.discounted_price.toFixed(2)}</p>
+                        <p>Seller: ${product.seller_name}</p>
+                        <button class="add-to-cart-btn" onclick="testAddToCart('${product._id}', ${index})">
+                            Add to Cart (Test)
+                        </button>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                div.innerHTML = `<span class="error">❌ Error loading products: ${error.message}</span>`;
+            }
+        }
+        
+        function testAddToCart(productId, index) {
+            const div = document.getElementById('cart-test');
+            console.log('Test add to cart called with:', productId, index);
+            
+            const product = testProducts[index];
+            if (!product) {
+                div.innerHTML = '<span class="error">❌ Product not found</span>';
+                return;
+            }
+            
+            console.log('Adding product:', product);
+            
+            // Simulate the same logic as the main page
+            const existingItem = testCart.find(item => item.id === product._id);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+                div.innerHTML = `<span class="success">✅ Increased quantity of ${product.name}</span>`;
+            } else {
+                testCart.push({
+                    id: product._id,
+                    name: product.name,
+                    price: product.discounted_price,
+                    image: product.image_url,
+                    quantity: 1,
+                    seller: product.seller_name
+                });
+                div.innerHTML = `<span class="success">✅ Added ${product.name} to cart</span>`;
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(testCart));
+            console.log('Cart updated:', testCart);
+            
+            // Visual feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Added!';
+            button.style.backgroundColor = '#dc3545';
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = '#28a745';
+            }, 1000);
+        }
+        
+        function checkCart() {
+            const div = document.getElementById('cart-status');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (cart.length === 0) {
+                div.innerHTML = '<span class="info">Cart is empty</span>';
+            } else {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                let html = `<span class="success">Cart has ${totalItems} items, Total: $${totalPrice.toFixed(2)}</span><br>`;
+                html += '<pre>' + JSON.stringify(cart, null, 2) + '</pre>';
+                div.innerHTML = html;
+            }
+        }
+        
+        function clearTestCart() {
+            testCart = [];
+            localStorage.removeItem('cart');
+            document.getElementById('cart-status').innerHTML = '<span class="info">Cart cleared</span>';
+        }
+        
+        // Auto-run checks
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            checkCart();
+        });
+    </script>
+</body>
+</html>

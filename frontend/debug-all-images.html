@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug All Images</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .product-card { border: 1px solid #eee; padding: 10px; border-radius: 5px; }
+        .product-image { width: 100%; height: 150px; object-fit: cover; border: 1px solid #ccc; }
+        .image-failed { border: 2px solid red !important; }
+        .url-info { font-family: monospace; font-size: 12px; color: #666; word-break: break-all; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug All Images</h1>
+    
+    <div class="section">
+        <h3>Image URL Construction Test</h3>
+        <div id="url-construction"></div>
+        <button onclick="testURLConstruction()">Test URL Construction</button>
+    </div>
+    
+    <div class="section">
+        <h3>All Products with Image Analysis</h3>
+        <div id="all-products"></div>
+        <button onclick="loadAllProducts()">Load All Products</button>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        function getImageUrl(imageUrl) {
+            if (!imageUrl || imageUrl.trim() === '') {
+                return 'https://via.placeholder.com/200/E2E3E5/6C757D?text=No+Image';
+            }
+            
+            // If it's already a full URL (starts with http), use it directly
+            if (imageUrl.startsWith('http')) {
+                return imageUrl;
+            }
+            
+            // If it's a relative path (uploaded image), construct full URL
+            return API_BASE_URL.replace('/api', '') + imageUrl;
+        }
+        
+        function testURLConstruction() {
+            const div = document.getElementById('url-construction');
+            
+            const apiBaseUrl = API_BASE_URL;
+            const backendBaseUrl = apiBaseUrl.replace('/api', '');
+            
+            const testCases = [
+                {
+                    input: 'https://images.unsplash.com/photo-1234567890/test.jpg',
+                    expected: 'https://images.unsplash.com/photo-1234567890/test.jpg',
+                    type: 'External URL'
+                },
+                {
+                    input: '/uploads/products/test.jpg',
+                    expected: backendBaseUrl + '/uploads/products/test.jpg',
+                    type: 'Uploaded Image'
+                },
+                {
+                    input: '',
+                    expected: 'https://via.placeholder.com/200/E2E3E5/6C757D?text=No+Image',
+                    type: 'Empty/No Image'
+                },
+                {
+                    input: null,
+                    expected: 'https://via.placeholder.com/200/E2E3E5/6C757D?text=No+Image',
+                    type: 'Null Image'
+                }
+            ];
+            
+            let html = `
+                <p><strong>API Base URL:</strong> ${apiBaseUrl}</p>
+                <p><strong>Backend Base URL:</strong> ${backendBaseUrl}</p>
+                <h4>Test Cases:</h4>
+            `;
+            
+            testCases.forEach((test, index) => {
+                const result = getImageUrl(test.input);
+                const isCorrect = result === test.expected;
+                
+                html += `
+                    <div style="margin: 10px 0; padding: 10px; border: 1px solid ${isCorrect ? 'green' : 'red'}; border-radius: 5px;">
+                        <strong>${test.type}:</strong><br>
+                        <strong>Input:</strong> ${test.input || 'null'}<br>
+                        <strong>Expected:</strong> ${test.expected}<br>
+                        <strong>Result:</strong> ${result}<br>
+                        <strong>Status:</strong> <span class="${isCorrect ? 'success' : 'error'}">${isCorrect ? '✅ Correct' : '❌ Incorrect'}</span>
+                    </div>
+                `;
+            });
+            
+            div.innerHTML = html;
+        }
+        
+        async function loadAllProducts() {
+            const div = document.getElementById('all-products');
+            
+            try {
+                div.innerHTML = '<p>Loading all products...</p>';
+                
+                const data = await API.getProducts({ limit: 50 });
+                
+                if (!data.products || data.products.length === 0) {
+                    div.innerHTML = '<p class="warning">No products found</p>';
+                    return;
+                }
+                
+                let html = `<p>Found ${data.products.length} products:</p><div class="product-grid">`;
+                
+                data.products.forEach((product, index) => {
+                    const imageUrl = getImageUrl(product.image_url);
+                    const isExternal = product.image_url && product.image_url.startsWith('http');
+                    const isUploaded = product.image_url && product.image_url.startsWith('/uploads/');
+                    const hasNoImage = !product.image_url || product.image_url.trim() === '';
+                    
+                    let imageType = 'No Image';
+                    let typeColor = '#999';
+                    
+                    if (isExternal) {
+                        imageType = 'External URL';
+                        typeColor = '#007bff';
+                    } else if (isUploaded) {
+                        imageType = 'Uploaded Image';
+                        typeColor = '#28a745';
+                    }
+                    
+                    html += `
+                        <div class="product-card">
+                            <img src="${imageUrl}" alt="${product.name}" class="product-image"
+                                 onerror="this.classList.add('image-failed'); this.alt='Failed to load';">
+                            <h4>${product.name}</h4>
+                            <p><strong>Category:</strong> ${product.category}</p>
+                            <p><strong>Seller:</strong> ${product.seller_name}</p>
+                            <p><strong>Price:</strong> $${product.discounted_price.toFixed(2)}</p>
+                            <p><strong>Image Type:</strong> <span style="color: ${typeColor};">${imageType}</span></p>
+                            <div class="url-info">
+                                <strong>Raw URL:</strong> ${product.image_url || 'null'}<br>
+                                <strong>Final URL:</strong> ${imageUrl}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                div.innerHTML = html;
+                
+            } catch (error) {
+                div.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Auto-run tests
+        document.addEventListener('DOMContentLoaded', () => {
+            testURLConstruction();
+            loadAllProducts();
+        });
+    </script>
+</body>
+</html>

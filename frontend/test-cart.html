@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cart Functionality</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .product { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .add-to-cart-btn { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+        .add-to-cart-btn:hover { background: #0056b3; }
+        .cart-info { background: #f8f9fa; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>🛒 Cart Functionality Test</h1>
+    
+    <div id="status"></div>
+    
+    <div id="test-products"></div>
+    
+    <div class="cart-info">
+        <h3>Cart Status:</h3>
+        <div id="cart-status">Cart is empty</div>
+        <button onclick="showCart()">Show Cart Contents</button>
+        <button onclick="clearCart()">Clear Cart</button>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        // Simple cart for testing
+        let testCart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        function addToCart(product) {
+            console.log('Adding to cart:', product);
+            
+            const existingItem = testCart.find(item => item.id === product._id);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                testCart.push({
+                    id: product._id,
+                    name: product.name,
+                    price: product.discounted_price,
+                    image: product.image_url,
+                    quantity: 1,
+                    seller: product.seller_name
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(testCart));
+            updateCartStatus();
+            
+            return true;
+        }
+        
+        function updateCartStatus() {
+            const cartStatus = document.getElementById('cart-status');
+            const totalItems = testCart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = testCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            if (testCart.length === 0) {
+                cartStatus.innerHTML = 'Cart is empty';
+            } else {
+                cartStatus.innerHTML = `Cart has ${totalItems} items, Total: $${totalPrice.toFixed(2)}`;
+            }
+        }
+        
+        function showCart() {
+            const cartStatus = document.getElementById('cart-status');
+            if (testCart.length === 0) {
+                cartStatus.innerHTML = 'Cart is empty';
+                return;
+            }
+            
+            let cartHtml = '<h4>Cart Contents:</h4><ul>';
+            testCart.forEach(item => {
+                cartHtml += `<li>${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)} (by ${item.seller})</li>`;
+            });
+            cartHtml += '</ul>';
+            cartStatus.innerHTML = cartHtml;
+        }
+        
+        function clearCart() {
+            testCart = [];
+            localStorage.removeItem('cart');
+            updateCartStatus();
+        }
+        
+        async function loadTestProducts() {
+            const statusDiv = document.getElementById('status');
+            const productsDiv = document.getElementById('test-products');
+            
+            try {
+                statusDiv.innerHTML = '<span class="success">Loading products...</span>';
+                
+                const response = await fetch(`${API_BASE_URL}/products?limit=3`);
+                const data = await response.json();
+                
+                if (response.ok && data.products.length > 0) {
+                    statusDiv.innerHTML = `<span class="success">✅ Loaded ${data.products.length} products for testing</span>`;
+                    
+                    productsDiv.innerHTML = data.products.map(product => `
+                        <div class="product">
+                            <h3>${product.name}</h3>
+                            <p>Price: $${product.discounted_price.toFixed(2)} (was $${product.original_price.toFixed(2)})</p>
+                            <p>Seller: ${product.seller_name}</p>
+                            <p>Stock: ${product.quantity}</p>
+                            <button class="add-to-cart-btn" onclick="testAddToCart('${product._id}')">
+                                Add to Cart
+                            </button>
+                        </div>
+                    `).join('');
+                    
+                    // Store products globally for testing
+                    window.testProducts = data.products;
+                } else {
+                    statusDiv.innerHTML = '<span class="error">❌ No products found</span>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+        
+        function testAddToCart(productId) {
+            const product = window.testProducts.find(p => p._id === productId);
+            if (product) {
+                const success = addToCart(product);
+                if (success) {
+                    const button = event.target;
+                    const originalText = button.textContent;
+                    button.textContent = 'Added!';
+                    button.style.backgroundColor = '#28a745';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.backgroundColor = '#007bff';
+                    }, 1000);
+                }
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartStatus();
+            loadTestProducts();
+        });
+    </script>
+</body>
+</html>

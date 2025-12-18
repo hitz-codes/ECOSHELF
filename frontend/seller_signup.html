@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Signup - EcoMart</title>
+    <link rel="stylesheet" href="signup_style.css"> 
+</head>
+<body>
+
+    <div class="signup-container">
+        <a href="index.html" class="logo">EcoMart</a>
+        <h1>Create Your Seller Account</h1>
+        <p>Start selling your products and reduce waste.</p>
+
+        <form id="seller-signup-form" action="/api/auth/register-seller" method="POST">
+            
+            <div class="input-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="mobile">Mobile Number</label>
+                <input type="tel" id="mobile" name="mobile_number" required>
+            </div>
+
+            <div class="input-group">
+                <label for="business-name">Business Name</label>
+                <input type="text" id="business-name" name="business_name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="business-address">Business Address</label>
+                <textarea id="business-address" name="business_address" rows="3" required></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="business-license">Business License Number</label>
+                <input type="text" id="business-license" name="business_license" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm_password" required>
+            </div>
+
+            <p id="error-message" class="error-text"></p>
+
+            <button type="submit" class="signup-button">Create Seller Account</button>
+        </form>
+
+        <div class="login-link">
+            <p>Already have an account? <a href="login.html?role=seller">Login</a></p>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="seller_signup.js"></script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+/* ======== GLOBAL & BODY ======== */
+:root {
+    /* NEW: Coffee Palette */
+    --primary-color: #561C24;   /* Deep Maroon */
+    --accent-color: #6D2932;    /* Medium Maroon */
+    --background-color: #C7B7A3; /* Taupe */
+    --card-background: #E8D8C4; /* Light Cream */
+    --text-color: #333;
+    --light-text-color: #555;
+    --border-color: #C7B7A3; /* Taupe */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background-color); /* NEW: Taupe */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+/* NEW: Serif font for headings */
+h1 {
+    font-family: "Times New Roman", Times, serif;
+}
+
+/* ======== LOGIN CONTAINER (Main Card) ======== */
+.login-container {
+    display: flex;
+    max-width: 900px;
+    width: 100%;
+    background-color: var(--card-background); /* NEW: Light Cream */
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Important for rounded corners on children */
+}
+
+/* ======== Left Column: Image ======== */
+.login-image-section {
+    flex-basis: 40%; /* Image takes 40% of the width */
+    display: none; /* Hide on mobile by default */
+}
+.login-image-section img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Change "cover" to "contain" */
+    display: block;
+}
+#seller-image {
+    display: none;
+}
+/* Show image on larger screens */
+@media (min-width: 768px) {
+    .login-image-section {
+        display: block;
+    }
+}
+
+/* ======== Right Column: Form ======== */
+.login-form-section {
+    flex-basis: 60%; /* Form takes 60% of the width */
+    padding: 3rem;
+    box-sizing: border-box;
+}
+/* On mobile, form takes full width */
+@media (max-width: 767px) {
+    .login-form-section {
+        flex-basis: 100%;
+        padding: 2rem;
+    }
+}
+
+.login-form-section h1 {
+    font-size: 2.25rem;
+    color: var(--primary-color);
+    margin: 0 0 0.5rem 0;
+}
+
+.login-form-section .subtitle {
+    font-size: 1rem;
+    color: var(--light-text-color);
+    margin-bottom: 2rem;
+}
+
+/* ======== Role Selection Tabs ======== */
+.role-selector {
+    display: flex;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.role-tab {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--light-text-color);
+    transition: background-color 0.2s, color 0.2s;
+}
+.role-tab:first-child {
+    border-right: 1px solid var(--border-color);
+}
+.role-tab.active {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+/* Special for seller to use accent */
+#btn-seller.active {
+    background-color: var(--accent-color); 
+}
+
+
+/* ======== Form Styling ======== */
+.input-group {
+    margin-bottom: 1.25rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #444;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-sizing: border-box; 
+    font-size: 1rem;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(86, 28, 36, 0.1);
+}
+
+.password-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgot-password {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* ======== Buttons & Links ======== */
+.login-button {
+    width: 100%;
+    padding: 0.85rem;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 1rem;
+}
+
+.login-button:hover {
+    background-color: var(--accent-color);
+}
+
+.signup-link {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    text-align: center;
+}
+
+.signup-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}

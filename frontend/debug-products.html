@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Products Loading</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Products Loading</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="testAuth()">1. Test Authentication</button>
+    <button onclick="testBackendHealth()">2. Test Backend Health</button>
+    <button onclick="testProductsAPI()">3. Test Products API</button>
+    <button onclick="testProductsWithAuth()">4. Test Products with Auth</button>
+    <button onclick="clearResults()">Clear Results</button>
+
+    <script src="api.js"></script>
+    <script>
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = message;
+            document.getElementById('results').appendChild(div);
+            document.getElementById('results').scrollTop = document.getElementById('results').scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testAuth() {
+            addResult('🔐 Testing Authentication...', 'info');
+            
+            const token = getAuthToken();
+            const user = getUser();
+            
+            if (!token) {
+                addResult('❌ No auth token found', 'error');
+                addResult('💡 Please login first at: <a href="login.html">login.html</a>', 'info');
+                return;
+            }
+            
+            addResult(`✅ Token found: ${token.substring(0, 20)}...`, 'success');
+            
+            if (!user) {
+                addResult('❌ No user data found', 'error');
+                return;
+            }
+            
+            addResult(`✅ User: ${user.name} (${user.role})`, 'success');
+            
+            if (user.role !== 'buyer') {
+                addResult('⚠️ User is not a buyer - this might cause issues', 'error');
+            }
+        }
+
+        async function testBackendHealth() {
+            addResult('🏥 Testing Backend Health...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult('✅ Backend is healthy', 'success');
+                    addResult(`<pre>${JSON.stringify(data, null, 2)}</pre>`, 'info');
+                } else {
+                    addResult(`❌ Backend health check failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Backend connection failed: ${error.message}`, 'error');
+                addResult(`💡 Make sure backend is running on: ${API_BASE_URL.replace('/api', '')}`, 'info');
+            }
+        }
+
+        async function testProductsAPI() {
+            addResult('📦 Testing Products API (no auth)...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/products`);
+                const data = await response.json();
+                
+                addResult(`📊 Response Status: ${response.status}`, 'info');
+                addResult(`📊 Response Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}`, 'info');
+                
+                if (response.ok) {
+                    addResult(`✅ Products API works! Found ${data.products ? data.products.length : 0} products`, 'success');
+                    addResult(`<pre>${JSON.stringify(data, null, 2)}</pre>`, 'info');
+                } else {
+                    addResult(`❌ Products API failed: ${data.message}`, 'error');
+                    addResult(`<pre>${JSON.stringify(data, null, 2)}</pre>`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Products API error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testProductsWithAuth() {
+            addResult('🔐 Testing Products API with Authentication...', 'info');
+            
+            try {
+                const data = await API.getProducts({ limit: 10 });
+                addResult(`✅ Authenticated Products API works! Found ${data.products ? data.products.length : 0} products`, 'success');
+                addResult(`<pre>${JSON.stringify(data, null, 2)}</pre>`, 'info');
+            } catch (error) {
+                addResult(`❌ Authenticated Products API error: ${error.message}`, 'error');
+                console.error('Full error:', error);
+            }
+        }
+
+        // Auto-run basic tests
+        window.onload = () => {
+            addResult('🚀 Starting debug tests...', 'info');
+            addResult(`🌐 API Base URL: ${API_BASE_URL}`, 'info');
+            addResult(`📍 Current URL: ${window.location.href}`, 'info');
+            testAuth();
+        };
+    </script>
+</body>
+</html>

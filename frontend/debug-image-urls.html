@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Image URLs</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .url-test { margin: 10px 0; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
+        .url-test img { width: 100px; height: 100px; object-fit: cover; margin: 10px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        code { background: #f5f5f5; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Image URLs</h1>
+    
+    <div class="test-section">
+        <h3>Placeholder Service Test</h3>
+        <div id="placeholder-test"></div>
+        <button onclick="testPlaceholders()">Test Placeholder Services</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Backend Connectivity Test</h3>
+        <div id="backend-test"></div>
+        <button onclick="testBackend()">Test Backend Connection</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Product Image URLs</h3>
+        <div id="product-urls"></div>
+        <button onclick="testProductUrls()">Test Product Image URLs</button>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        function testPlaceholders() {
+            const div = document.getElementById('placeholder-test');
+            
+            const placeholderServices = [
+                {
+                    name: 'via.placeholder.com',
+                    url: 'https://via.placeholder.com/100/E2E3E5/6C757D?text=Test'
+                },
+                {
+                    name: 'placehold.co',
+                    url: 'https://placehold.co/100x100/E2E3E5/6C757D?text=Test'
+                },
+                {
+                    name: 'picsum.photos',
+                    url: 'https://picsum.photos/100/100?random=1'
+                },
+                {
+                    name: 'placeholder.com',
+                    url: 'https://placeholder.com/100x100'
+                }
+            ];
+            
+            let html = '<h4>Testing placeholder services:</h4>';
+            
+            placeholderServices.forEach(service => {
+                html += `
+                    <div class="url-test">
+                        <strong>${service.name}:</strong><br>
+                        <code>${service.url}</code><br>
+                        <img src="${service.url}" alt="${service.name}" 
+                             onload="this.nextElementSibling.innerHTML='<span class=success>✅ Working</span>'"
+                             onerror="this.nextElementSibling.innerHTML='<span class=error>❌ Failed</span>'">
+                        <span>Loading...</span>
+                    </div>
+                `;
+            });
+            
+            div.innerHTML = html;
+        }
+        
+        async function testBackend() {
+            const div = document.getElementById('backend-test');
+            
+            try {
+                div.innerHTML = '<p>Testing backend connectivity...</p>';
+                
+                const apiBaseUrl = API_BASE_URL;
+                const backendBaseUrl = apiBaseUrl.replace('/api', '');
+                
+                let html = `
+                    <p><strong>API Base URL:</strong> <code>${apiBaseUrl}</code></p>
+                    <p><strong>Backend Base URL:</strong> <code>${backendBaseUrl}</code></p>
+                `;
+                
+                // Test backend root
+                try {
+                    const response = await fetch(backendBaseUrl);
+                    html += `<p class="success">✅ Backend root accessible (${response.status})</p>`;
+                } catch (error) {
+                    html += `<p class="error">❌ Backend root failed: ${error.message}</p>`;
+                }
+                
+                // Test API endpoint
+                try {
+                    const response = await fetch(`${apiBaseUrl}/products?limit=1`);
+                    html += `<p class="success">✅ API endpoint accessible (${response.status})</p>`;
+                } catch (error) {
+                    html += `<p class="error">❌ API endpoint failed: ${error.message}</p>`;
+                }
+                
+                // Test uploads directory
+                try {
+                    const response = await fetch(`${backendBaseUrl}/uploads/`);
+                    html += `<p class="success">✅ Uploads directory accessible (${response.status})</p>`;
+                } catch (error) {
+                    html += `<p class="error">❌ Uploads directory failed: ${error.message}</p>`;
+                }
+                
+                div.innerHTML = html;
+                
+            } catch (error) {
+                div.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function testProductUrls() {
+            const div = document.getElementById('product-urls');
+            
+            try {
+                div.innerHTML = '<p>Loading products and testing image URLs...</p>';
+                
+                const data = await API.getProducts({ limit: 5 });
+                
+                if (!data.products || data.products.length === 0) {
+                    div.innerHTML = '<p class="warning">No products found</p>';
+                    return;
+                }
+                
+                let html = `<h4>Testing ${data.products.length} product image URLs:</h4>`;
+                
+                data.products.forEach((product, index) => {
+                    const rawImageUrl = product.image_url;
+                    let finalImageUrl;
+                    let urlType;
+                    
+                    if (!rawImageUrl || rawImageUrl.trim() === '') {
+                        finalImageUrl = 'https://placehold.co/100x100/E2E3E5/6C757D?text=No+Image';
+                        urlType = 'No Image (Placeholder)';
+                    } else if (rawImageUrl.startsWith('http')) {
+                        finalImageUrl = rawImageUrl;
+                        urlType = 'External URL';
+                    } else {
+                        finalImageUrl = `${API_BASE_URL.replace('/api', '')}${rawImageUrl}`;
+                        urlType = 'Uploaded Image';
+                    }
+                    
+                    html += `
+                        <div class="url-test">
+                            <strong>${product.name}</strong> (${product.category})<br>
+                            <strong>Type:</strong> ${urlType}<br>
+                            <strong>Raw URL:</strong> <code>${rawImageUrl || 'null'}</code><br>
+                            <strong>Final URL:</strong> <code>${finalImageUrl}</code><br>
+                            <img src="${finalImageUrl}" alt="${product.name}" 
+                                 onload="this.nextElementSibling.innerHTML='<span class=success>✅ Loaded</span>'"
+                                 onerror="this.nextElementSibling.innerHTML='<span class=error>❌ Failed</span>'">
+                            <span>Loading...</span>
+                        </div>
+                    `;
+                });
+                
+                div.innerHTML = html;
+                
+            } catch (error) {
+                div.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Auto-run tests
+        document.addEventListener('DOMContentLoaded', () => {
+            testPlaceholders();
+            testBackend();
+        });
+    </script>
+</body>
+</html>

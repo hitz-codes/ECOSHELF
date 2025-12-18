@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMart - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <main class="login-container">
+        
+        <section class="login-image-section">
+            <img id="buyer-image" src="shoppycart.jpg" alt="Shopping cart illustration">
+            
+            <img id="seller-image" src="market.png" alt="Market stall illustration">
+        </section>
+
+        <section class="login-form-section">
+            <h1>Login</h1>
+            <p class="subtitle">Welcome back! Please enter your details.</p>
+
+            <div class="role-selector">
+                <button id="btn-buyer" class="role-tab active" data-role="buyer">Buyer</button>
+                <button id="btn-seller" class="role-tab" data-role="seller">Seller</button>
+            </div>
+
+            <form id="login-form" action="/login" method="POST">
+                <input type="hidden" id="user-role" name="role" value="buyer">
+                
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="input-group">
+                    <div class="password-header">
+                        <label for="password">Password</label>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="login-button">Login</button>
+            </form>
+
+            <div class="signup-link">
+                <p>Don't have an account? <a href="consumer_signup.html" id="signup-link">Sign Up</a></p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

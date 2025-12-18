@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Account - EcoMart</title>
+    <link rel="stylesheet" href="consumer_home.css">
+    <link rel="stylesheet" href="account.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="consumer_home.html" class="logo">EcoMart</a>
+            <div class="nav-links">
+                <a href="consumer_home.html#shop">Shop</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" placeholder="Search for products...">
+            </div>
+            <div class="nav-actions">
+                <a href="account.html" class="nav-icon-btn">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <button id="cart-btn" class="nav-cart-btn">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cart-count">0</span>
+                    <span>Cart</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="account-container">
+        <h1>Your Account</h1>
+
+        <div class="account-grid">
+            
+            <a href="login_security.html" class="account-card">
+                <i class="fa-solid fa-lock"></i>
+                <div class="card-content">
+                    <h3>Login & Security</h3>
+                    ...
+                </div>
+            </a>
+
+            <a href="addresses.html" class="account-card">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <div class="card-content">
+                    <h3>Your Addresses</h3>
+                    <p>Edit your delivery address.</p>
+                </div>
+            </a>
+            
+            <a href="orders.html" class="account-card">
+                <i class="fa-solid fa-box-archive"></i>
+                <div class="card-content">
+                    <h3>Your Orders</h3>
+                    <p>Track, return, or buy again.</p>
+                </div>
+            </a>
+            
+
+            <a href="#" class="account-card">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <div class="card-content">
+                    <h3>Sign Out</h3>
+                    <p>End your current session.</p>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <script src="consumer_home.js"></script>
+    <div id="modal-overlay" class="hidden"></div>
+
+    <div id="profile-modal" class="modal-drawer">
+        </div>
+
+    <div id="cart-modal" class="modal-drawer">
+        <div class="modal-header">
+            <h2>Your Cart</h2>
+            <button id="cart-close-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-content">
+            <div id="cart-items-list">
+                <p class="cart-empty-msg">Your cart is empty.</p>
+                </div>
+            
+            <div class="cart-summary">
+                <p>Total: <span id="cart-total">$0.00</span></p>
+                <button class="checkout-btn">Proceed to Purchase</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-overlay" class="hidden"></div>
+
+    <div id="profile-modal" class="modal-drawer">
+        </div>
+
+    <div id="cart-modal" class="modal-drawer">
+        <div class="modal-header">
+            <h2>Your Cart</h2>
+            <button id="cart-close-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-content">
+            <div id="cart-items-list">
+                <p class="cart-empty-msg">Your cart is empty.</p>
+                </div>
+            
+            <div class="cart-summary">
+                <p>Total: <span id="cart-total">$0.00</span></p>
+                <button class="checkout-btn">Proceed to Purchase</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

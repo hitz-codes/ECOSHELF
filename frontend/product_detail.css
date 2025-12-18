@@ -1,0 +1,293 @@
+/* ======== MAIN PRODUCT CONTAINER ======== */
+.product-container {
+    max-width: 1200px;
+    margin: 2.5rem auto;
+    padding: 0 1.5rem;
+}
+
+.product-main-card {
+    display: flex;
+    flex-wrap: wrap; /* Allows stacking on mobile */
+    background-color: var(--card-background); /* Light Cream */
+    border: 1px solid #D6C9B9;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* ======== Left Column: Image ======== */
+.product-image-gallery {
+    flex: 1 1 50%; /* Flex-grow, flex-shrink, flex-basis */
+    min-width: 300px;
+    background-color: #fff; /* White bg for image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+.product-image-gallery img {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ======== Right Column: Details ======== */
+.product-details-content {
+    flex: 1 1 50%;
+    min-width: 300px;
+    padding: 2.5rem;
+    box-sizing: border-box;
+}
+
+.product-details-content h1 {
+    font-size: 2.75rem;
+    color: var(--primary-color); /* Deep Maroon */
+    margin: 0 0 0.5rem 0;
+}
+
+.product-details-content .product-brand {
+    font-size: 1.1rem;
+    color: var(--light-text-color);
+    margin-bottom: 1.5rem;
+}
+.product-details-content .product-brand a {
+    color: var(--accent-color); /* Medium Maroon */
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.price-box {
+    margin-bottom: 1.5rem;
+}
+.price-box .price-old {
+    font-size: 1.25rem;
+    color: var(--light-text-color);
+    text-decoration: line-through;
+    margin-right: 0.75rem;
+}
+.price-box .price-new {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--danger-color);
+}
+
+.expiry-info {
+    font-size: 1.1rem;
+    color: #444;
+    background-color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #D6C9B9;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+.expiry-info i {
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+}
+
+.short-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 2rem;
+}
+
+.add-to-cart-btn-large {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.add-to-cart-btn-large:hover:not(:disabled) {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.add-to-cart-btn-large:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+.add-to-cart-btn-large i {
+    margin-right: 0.75rem;
+}
+
+
+/* ======== TABBED INFO SECTION ======== */
+.product-info-tabs {
+    margin-top: 2.5rem;
+    background-color: var(--card-background);
+    border: 1px solid #D6C9B9;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.tab-headers {
+    display: flex;
+    background-color: #F8F4EF; /* Even lighter cream */
+    border-bottom: 1px solid #D6C9B9;
+}
+
+.tab-link {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-align: center;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    color: var(--light-text-color);
+    transition: background-color 0.2s, color 0.2s;
+    border-bottom: 3px solid transparent;
+}
+.tab-link:hover {
+    background-color: #fff;
+    color: var(--accent-color);
+}
+.tab-link.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+    background-color: #fff;
+}
+
+.tab-content-wrapper {
+    padding: 2.5rem;
+}
+
+.tab-content {
+    display: none; /* Hide all tabs by default */
+}
+.tab-content.active {
+    display: block; /* Show the active one */
+}
+
+.tab-content h3 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+.tab-content p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #444;
+}
+
+.reviews {
+    margin-top: 2rem;
+}
+.review-item {
+    border-top: 1px solid #D6C9B9;
+    padding: 1rem 0;
+}
+.review-item p {
+    font-size: 1rem;
+    font-style: italic;
+    color: #555;
+    margin: 0;
+}
+
+/* --- ADD TO BOTTOM of product_detail.css --- */
+
+/* ======== REVIEWS SECTION ======== */
+.reviews-section {
+    margin-top: 2.5rem;
+    background-color: var(--card-background);
+    border: 1px solid #D6C9B9;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    padding: 2.5rem;
+}
+.reviews-section h2 {
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+.write-review-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    margin-bottom: 2rem;
+}
+.write-review-btn:hover {
+    background-color: var(--accent-color);
+}
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.review-item {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+}
+.review-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap; /* For mobile */
+}
+.star-rating {
+    color: #f0ad4e; /* Star yellow */
+    font-size: 1.1rem;
+}
+.review-user {
+    color: #333;
+    font-weight: 600;
+}
+.review-date {
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    margin-left: auto; /* Pushes date to the right */
+}
+.review-body {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #444;
+    margin: 0;
+}
+
+/* ======== RECOMMENDED PRODUCTS ======== */
+.recommended-products {
+    margin-top: 2.5rem;
+    /* We don't need a background card here, 
+       just a title for the grid. */
+}
+.recommended-products h2 {
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+/* Note: The .product-grid and .product-card styles
+   from consumer_home.css are automatically
+   re-used here, so we don't need to write them again.
+*/

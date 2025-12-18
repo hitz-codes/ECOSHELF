@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Create Order</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🛒 Test Create Order</h1>
+    
+    <div class="test-section">
+        <h3>Step 1: Check Auth & Get Products</h3>
+        <div id="setup-check"></div>
+        <button onclick="setupTest()">Setup Test</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 2: Create Test Order</h3>
+        <div id="create-order"></div>
+        <button onclick="createTestOrder()">Create Order</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 3: Check Orders</h3>
+        <div id="check-orders"></div>
+        <button onclick="checkOrders()">Check My Orders</button>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        let testProduct = null;
+        
+        async function setupTest() {
+            const div = document.getElementById('setup-check');
+            
+            // Check auth
+            const token = getAuthToken();
+            const user = getUser();
+            
+            if (!token || !user || user.role !== 'buyer') {
+                div.innerHTML = '<span class="error">❌ Please login as a buyer first</span>';
+                return;
+            }
+            
+            try {
+                div.innerHTML = '<span class="info">Getting products...</span>';
+                
+                // Get a product to order
+                const data = await API.getProducts({ limit: 1 });
+                
+                if (data.products && data.products.length > 0) {
+                    testProduct = data.products[0];
+                    div.innerHTML = `
+                        <span class="success">✅ Setup complete</span>
+                        <p><strong>User:</strong> ${user.name} (${user.role})</p>
+                        <p><strong>Test Product:</strong> ${testProduct.name} - $${testProduct.discounted_price}</p>
+                    `;
+                } else {
+                    div.innerHTML = '<span class="error">❌ No products available for testing</span>';
+                }
+                
+            } catch (error) {
+                div.innerHTML = `<span class="error">❌ Setup error: ${error.message}</span>`;
+            }
+        }
+        
+        async function createTestOrder() {
+            const div = document.getElementById('create-order');
+            
+            if (!testProduct) {
+                div.innerHTML = '<span class="error">❌ Run setup first</span>';
+                return;
+            }
+            
+            try {
+                div.innerHTML = '<span class="info">Creating test order...</span>';
+                
+                const orderData = {
+                    items: [
+                        {
+                            product_id: testProduct._id,
+                            quantity: 1
+                        }
+                    ],
+                    payment_method: 'cod',
+                    delivery_address: '123 Test Street, Test City, 12345',
+                    notes: 'Test order from debug page'
+                };
+                
+                console.log('Creating order with data:', orderData);
+                
+                const response = await API.createOrder(orderData);
+                
+                if (response && response.order) {
+                    div.innerHTML = `
+                        <span class="success">✅ Order created successfully!</span>
+                        <pre>${JSON.stringify(response, null, 2)}</pre>
+                    `;
+                } else {
+                    div.innerHTML = `<span class="error">❌ Invalid response from create order</span>`;
+                }
+                
+            } catch (error) {
+                console.error('Create order error:', error);
+                div.innerHTML = `
+                    <span class="error">❌ Create order error: ${error.message}</span>
+                    <pre>${JSON.stringify(error, null, 2)}</pre>
+                `;
+            }
+        }
+        
+        async function checkOrders() {
+            const div = document.getElementById('check-orders');
+            
+            try {
+                div.innerHTML = '<span class="info">Checking orders...</span>';
+                
+                const data = await API.getMyOrders({ limit: 10 });
+                
+                if (data && data.orders) {
+                    div.innerHTML = `
+                        <span class="success">✅ Found ${data.orders.length} orders</span>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    div.innerHTML = `<span class="error">❌ Invalid response from get orders</span>`;
+                }
+                
+            } catch (error) {
+                console.error('Get orders error:', error);
+                div.innerHTML = `
+                    <span class="error">❌ Get orders error: ${error.message}</span>
+                    <pre>${JSON.stringify(error, null, 2)}</pre>
+                `;
+            }
+        }
+        
+        // Auto-run setup
+        document.addEventListener('DOMContentLoaded', () => {
+            setupTest();
+        });
+    </script>
+</body>
+</html>

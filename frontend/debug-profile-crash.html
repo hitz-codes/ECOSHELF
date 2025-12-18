@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Profile Crash</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .error { color: red; }
+        .success { color: green; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>Debug Profile Page Crash</h1>
+    
+    <div class="debug-section">
+        <h3>Step 1: Check if API.js is loaded</h3>
+        <div id="api-check"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>Step 2: Check Authentication Functions</h3>
+        <div id="auth-check"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>Step 3: Check Local Storage</h3>
+        <div id="storage-check"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>Step 4: Test Login</h3>
+        <button onclick="testLogin()">Login as buyer@example.com</button>
+        <div id="login-check"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>Step 5: Try Loading Profile Page</h3>
+        <button onclick="loadProfilePage()">Load Profile Page</button>
+        <div id="profile-check"></div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML += `<div class="${type}">${message}</div>`;
+        }
+
+        // Step 1: Check API.js
+        try {
+            if (typeof API_BASE_URL !== 'undefined') {
+                log('api-check', `✓ API_BASE_URL loaded: ${API_BASE_URL}`, 'success');
+            } else {
+                log('api-check', '✗ API_BASE_URL not defined', 'error');
+            }
+        } catch (error) {
+            log('api-check', `✗ Error checking API: ${error.message}`, 'error');
+        }
+
+        // Step 2: Check Auth Functions
+        try {
+            if (typeof isLoggedIn === 'function') {
+                log('auth-check', '✓ isLoggedIn function exists', 'success');
+                log('auth-check', `Current login status: ${isLoggedIn()}`, 'info');
+            } else {
+                log('auth-check', '✗ isLoggedIn function not found', 'error');
+            }
+
+            if (typeof getUser === 'function') {
+                log('auth-check', '✓ getUser function exists', 'success');
+                const user = getUser();
+                log('auth-check', `Current user: ${user ? JSON.stringify(user) : 'null'}`, 'info');
+            } else {
+                log('auth-check', '✗ getUser function not found', 'error');
+            }
+
+            if (typeof getAuthToken === 'function') {
+                log('auth-check', '✓ getAuthToken function exists', 'success');
+                const token = getAuthToken();
+                log('auth-check', `Current token: ${token ? 'exists' : 'null'}`, 'info');
+            } else {
+                log('auth-check', '✗ getAuthToken function not found', 'error');
+            }
+        } catch (error) {
+            log('auth-check', `✗ Error checking auth functions: ${error.message}`, 'error');
+        }
+
+        // Step 3: Check Local Storage
+        try {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            log('storage-check', `Token in storage: ${token ? 'exists' : 'null'}`, token ? 'success' : 'error');
+            log('storage-check', `User in storage: ${user ? 'exists' : 'null'}`, user ? 'success' : 'error');
+            
+            if (user) {
+                try {
+                    const parsedUser = JSON.parse(user);
+                    log('storage-check', `User data: ${JSON.stringify(parsedUser)}`, 'info');
+                } catch (e) {
+                    log('storage-check', '✗ User data is corrupted', 'error');
+                }
+            }
+        } catch (error) {
+            log('storage-check', `✗ Error checking storage: ${error.message}`, 'error');
+        }
+
+        async function testLogin() {
+            try {
+                log('login-check', 'Attempting login...', 'info');
+                
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: 'buyer@example.com', 
+                        password: 'password123' 
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    log('login-check', '✓ Login successful!', 'success');
+                    log('login-check', `User: ${data.user.name} (${data.user.email})`, 'info');
+                } else {
+                    log('login-check', `✗ Login failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log('login-check', `✗ Login error: ${error.message}`, 'error');
+            }
+        }
+
+        function loadProfilePage() {
+            try {
+                log('profile-check', 'Checking if we can load profile page...', 'info');
+                
+                if (!isLoggedIn()) {
+                    log('profile-check', '✗ Not logged in - this would cause redirect', 'error');
+                    return;
+                }
+
+                const user = getUser();
+                if (!user) {
+                    log('profile-check', '✗ No user data - this would cause logout', 'error');
+                    return;
+                }
+
+                log('profile-check', '✓ Ready to load profile page', 'success');
+                log('profile-check', 'Opening login_security.html in new tab...', 'info');
+                window.open('login_security.html', '_blank');
+                
+            } catch (error) {
+                log('profile-check', `✗ Error loading profile: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run checks on load
+        window.addEventListener('load', () => {
+            log('api-check', 'Page loaded, running checks...', 'info');
+        });
+    </script>
+</body>
+</html>

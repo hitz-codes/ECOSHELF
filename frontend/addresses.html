@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Addresses - EcoMart</title>
+    <link rel="stylesheet" href="consumer_home.css">
+    <link rel="stylesheet" href="account.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="consumer_home.html" class="logo">EcoMart</a>
+            <div class="nav-actions">
+                <a href="account.html" class="nav-icon-btn">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <button id="cart-btn" class="nav-cart-btn">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cart-count">0</span>
+                    <span>Cart</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="account-container">
+        
+        <a href="account.html" class="back-link"><i class="fa-solid fa-chevron-left"></i> Back to Your Account</a>
+        <h1>Your Addresses</h1>
+
+        <button class="form-button" id="add-address-toggle-btn">
+            <i class="fa-solid fa-plus"></i> Add New Address
+        </button>
+
+        <div id="add-address-form-container" class="form-card hidden">
+            <h3>Add a New Address</h3>
+            <form id="add-address-form">
+                <div class="input-group">
+                    <label for="address-name">Full Name</label>
+                    <input type="text" id="address-name" placeholder="John Doe" required>
+                </div>
+                <div class="input-group">
+                    <label for="address-mobile">Mobile Number</label>
+                    <input type="tel" id="address-mobile" placeholder="+91..." required>
+                </div>
+                <div class="input-group">
+                    <label for="address-full">Full Address (Flat, House no, Street...)</label>
+                    <textarea id="address-full" rows="3" required></textarea>
+                </div>
+                <div class="input-group-row">
+                    <div class="input-group">
+                        <label for="address-city">City</label>
+                        <input type="text" id="address-city" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="address-pincode">Pincode</label>
+                        <input type="text" id="address-pincode" required>
+                    </div>
+                </div>
+                <button type="submit" class="form-button">Save Address</button>
+                <button type="button" id="cancel-add-address-btn" class="form-button-outline">Cancel</button>
+            </form>
+        </div>
+
+        <div class="address-grid" id="address-grid">
+            <!-- Addresses will be loaded dynamically -->
+        </div>
+
+    </main>
+    
+    <script src="api.js"></script>
+    <script src="addresses.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Profile Access</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        button { padding: 10px 15px; margin: 5px; background: #561c24; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #7d2a35; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Profile Access Test</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: Login as Buyer</h3>
+        <button onclick="loginAsBuyer()">Login as Buyer</button>
+        <button onclick="openProfile()">Open Profile Page</button>
+        <div id="buyer-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: Login as Seller</h3>
+        <button onclick="loginAsSeller()">Login as Seller</button>
+        <button onclick="openProfile()">Open Profile Page</button>
+        <div id="seller-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Check Current Status</h3>
+        <button onclick="checkStatus()">Check Current Login Status</button>
+        <div id="status-result"></div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        function showResult(message, type = 'info') {
+            // Show result in all result divs
+            const resultDivs = document.querySelectorAll('[id$="-result"]');
+            resultDivs.forEach(div => {
+                div.innerHTML = `<div class="result ${type}">${message}</div>`;
+            });
+        }
+
+        async function loginAsBuyer() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: 'buyer@example.com', 
+                        password: 'password123' 
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    showResult(`✓ Logged in as BUYER: ${data.user.name} (${data.user.email})`, 'success');
+                } else {
+                    showResult(`✗ Buyer login failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult(`✗ Buyer login error: ${error.message}`, 'error');
+            }
+        }
+
+        async function loginAsSeller() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: 'seller@example.com', 
+                        password: 'password123' 
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    showResult(`✓ Logged in as SELLER: ${data.user.name} (${data.user.email})`, 'success');
+                } else {
+                    showResult(`✗ Seller login failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult(`✗ Seller login error: ${error.message}`, 'error');
+            }
+        }
+
+        function openProfile() {
+            if (!isLoggedIn()) {
+                showResult('✗ Please login first', 'error');
+                return;
+            }
+
+            const user = getUser();
+            showResult(`✓ Opening profile page for ${user.role}: ${user.name}`, 'success');
+            
+            // Open in new tab to avoid losing this test page
+            window.open('login_security.html', '_blank');
+        }
+
+        function checkStatus() {
+            if (isLoggedIn()) {
+                const user = getUser();
+                showResult(`✓ Currently logged in as ${user.role.toUpperCase()}: ${user.name} (${user.email})`, 'info');
+            } else {
+                showResult('✗ Not logged in', 'error');
+            }
+        }
+
+        // Check status on page load
+        window.addEventListener('load', checkStatus);
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .info { background: #e7f3ff; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffe7e7; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Authentication Test</h1>
+    
+    <div id="auth-status"></div>
+    
+    <button onclick="checkAuth()">Check Auth Status</button>
+    <button onclick="loginTestUser()">Login Test Buyer</button>
+    <button onclick="clearAuth()">Clear Auth</button>
+
+    <script src="api.js"></script>
+    <script>
+        function checkAuth() {
+            const statusDiv = document.getElementById('auth-status');
+            const token = getAuthToken();
+            const user = getUser();
+            
+            let html = '<h3>Authentication Status:</h3>';
+            
+            if (token) {
+                html += `<div class="info">✅ Token exists: ${token.substring(0, 20)}...</div>`;
+            } else {
+                html += '<div class="error">❌ No token found</div>';
+            }
+            
+            if (user) {
+                html += `<div class="info">✅ User data: ${JSON.stringify(user, null, 2)}</div>`;
+            } else {
+                html += '<div class="error">❌ No user data found</div>';
+            }
+            
+            html += `<div class="info">API Base URL: ${API_BASE_URL}</div>`;
+            
+            statusDiv.innerHTML = html;
+        }
+        
+        async function loginTestUser() {
+            const statusDiv = document.getElementById('auth-status');
+            
+            try {
+                statusDiv.innerHTML = '<div class="info">Logging in test buyer...</div>';
+                
+                const response = await API.login({
+                    email: 'buyer@example.com',
+                    password: 'password123'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    statusDiv.innerHTML = '<div class="info">✅ Login successful!</div>';
+                    checkAuth();
+                } else {
+                    statusDiv.innerHTML = `<div class="error">❌ Login failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Login error: ${error.message}</div>`;
+            }
+        }
+        
+        function clearAuth() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            document.getElementById('auth-status').innerHTML = '<div class="info">Auth cleared</div>';
+        }
+        
+        // Check auth on load
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>

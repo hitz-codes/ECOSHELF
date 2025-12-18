@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Enhanced Filters</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .filter-group { margin: 10px 0; }
+        .filter-group label { display: inline-block; width: 120px; font-weight: bold; }
+        .filter-group select { padding: 5px; margin-left: 10px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .results { margin-top: 20px; }
+        .product-item { border: 1px solid #eee; padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Test Enhanced Filters</h1>
+    
+    <div class="test-section">
+        <h3>Filter Options</h3>
+        <div class="filter-group">
+            <label for="category">Category:</label>
+            <select id="category">
+                <option value="">All Categories</option>
+                <option value="Normal">Food & Grocery</option>
+                <option value="Seasonal">Seasonal Items</option>
+                <option value="Derived">By-products & Materials</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="price-range">Price Range:</label>
+            <select id="price-range">
+                <option value="">All Prices</option>
+                <option value="0-500">Under ₹500</option>
+                <option value="500-1500">₹500 - ₹1500</option>
+                <option value="1500-3000">₹1500 - ₹3000</option>
+                <option value="3000+">Above ₹3000</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="time-period">Expiry:</label>
+            <select id="time-period">
+                <option value="all">All Items</option>
+                <option value="today">Expires Today</option>
+                <option value="3-days">Expires in 3 Days</option>
+                <option value="1-week">Expires in 1 Week</option>
+                <option value="2-weeks">Expires in 2 Weeks</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="sort-by">Sort By:</label>
+            <select id="sort-by">
+                <option value="newest">Newest First</option>
+                <option value="expiring-soon">Expiring Soon</option>
+                <option value="price-low-high">Price: Low to High</option>
+                <option value="price-high-low">Price: High to Low</option>
+                <option value="rating">Most Popular</option>
+                <option value="discount">Highest Discount</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="availability">Availability:</label>
+            <select id="availability">
+                <option value="">All Items</option>
+                <option value="in-stock">In Stock</option>
+                <option value="low-stock">Low Stock (< 5)</option>
+                <option value="high-stock">High Stock (> 10)</option>
+            </select>
+        </div>
+        
+        <button onclick="testFilters()">Apply Filters</button>
+        <button onclick="clearFilters()">Clear All</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Results</h3>
+        <div id="results">Click "Apply Filters" to test the filtering system.</div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        async function testFilters() {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                resultsDiv.innerHTML = '<span class="info">Loading filtered products...</span>';
+                
+                const params = {};
+                
+                const category = document.getElementById('category').value;
+                const priceRange = document.getElementById('price-range').value;
+                const timePeriod = document.getElementById('time-period').value;
+                const sortBy = document.getElementById('sort-by').value;
+                const availability = document.getElementById('availability').value;
+                
+                if (category) params.category = category;
+                if (priceRange) params.price_range = priceRange;
+                if (timePeriod && timePeriod !== 'all') params.time_period = timePeriod;
+                if (sortBy) params.sort = sortBy;
+                if (availability) params.availability = availability;
+                
+                console.log('Filter parameters:', params);
+                
+                const data = await API.getProducts(params);
+                
+                if (data.products && data.products.length > 0) {
+                    let html = `<span class="success">✅ Found ${data.products.length} products</span><br><br>`;
+                    
+                    data.products.forEach(product => {
+                        const discountPercent = Math.round(((product.original_price - product.discounted_price) / product.original_price) * 100);
+                        const expiryDate = new Date(product.expiry_date).toLocaleDateString();
+                        
+                        html += `
+                            <div class="product-item">
+                                <strong>${product.name}</strong> (${product.category})<br>
+                                Price: $${product.discounted_price.toFixed(2)} 
+                                <span style="text-decoration: line-through; color: #999;">$${product.original_price.toFixed(2)}</span>
+                                <span style="color: #28a745;">${discountPercent}% off</span><br>
+                                Stock: ${product.quantity} | Expires: ${expiryDate}<br>
+                                Seller: ${product.seller_name}
+                            </div>
+                        `;
+                    });
+                    
+                    resultsDiv.innerHTML = html;
+                } else {
+                    resultsDiv.innerHTML = '<span class="info">No products found with current filters.</span>';
+                }
+                
+            } catch (error) {
+                console.error('Filter test error:', error);
+                resultsDiv.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+        
+        function clearFilters() {
+            document.getElementById('category').value = '';
+            document.getElementById('price-range').value = '';
+            document.getElementById('time-period').value = 'all';
+            document.getElementById('sort-by').value = 'newest';
+            document.getElementById('availability').value = '';
+            
+            document.getElementById('results').innerHTML = 'Filters cleared. Click "Apply Filters" to test.';
+        }
+        
+        // Auto-load all products on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            testFilters();
+        });
+    </script>
+</body>
+</html>
