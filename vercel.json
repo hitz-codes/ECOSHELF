@@ -2,25 +2,25 @@
   "version": 2,
   "builds": [
     {
-      "src": "Website2/backend/server.js",
-      "use": "@vercel/node"
-    },
-    {
       "src": "Website2/frontend/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "Website2/backend/server.js"
-    },
-    {
       "src": "/(.*)",
       "dest": "Website2/frontend/$1"
     }
   ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ]
 }

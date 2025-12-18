@@ -38,7 +38,11 @@ app.use(limiter);
 // CORS configuration
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
+    ? [
+        'https://ecoshelf.vercel.app',
+        'https://ecoshelf-hitz-codes.vercel.app',
+        /^https:\/\/.*\.vercel\.app$/
+      ] 
     : [
         'http://localhost:3000',
         'http://localhost:3001', 

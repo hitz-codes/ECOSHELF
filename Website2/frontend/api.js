@@ -5,9 +5,9 @@ const getBackendURL = () => {
   
   console.log('[API] Current hostname:', currentHost);
   
-  // Production deployment (Vercel)
+  // Production deployment - Frontend on Vercel, Backend on Render
   if (currentHost.includes('vercel.app') || currentHost.includes('ecoshelf')) {
-    return `${window.location.origin}/api`;
+    return 'https://ecoshelf-backend.onrender.com/api';
   }
   
   // If accessing via IP address, use the same IP for backend

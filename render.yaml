@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: ecoshelf-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd Website2/backend && npm install
+    startCommand: cd Website2/backend && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+    healthCheckPath: /api/health
