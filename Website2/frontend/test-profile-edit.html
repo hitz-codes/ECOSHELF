@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Profile Edit - EcoMart</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Profile Edit API Test</h1>
+    
+    <div class="test-section">
+        <h3>Login First</h3>
+        <input type="email" id="login-email" placeholder="Email" value="buyer@example.com">
+        <input type="password" id="login-password" placeholder="Password" value="password123">
+        <button onclick="testLogin()">Login</button>
+        <div id="login-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Update Name</h3>
+        <input type="text" id="new-name" placeholder="New Name" value="Updated Test Name">
+        <button onclick="testUpdateName()">Update Name</button>
+        <div id="name-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Send Email OTP</h3>
+        <input type="email" id="new-email" placeholder="New Email" value="newemail@example.com">
+        <button onclick="testSendOTP()">Send OTP</button>
+        <div id="otp-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Verify Email OTP</h3>
+        <input type="text" id="otp-code" placeholder="OTP Code" maxlength="6">
+        <button onclick="testVerifyOTP()">Verify OTP</button>
+        <div id="verify-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Change Password</h3>
+        <input type="password" id="current-pwd" placeholder="Current Password" value="password123">
+        <input type="password" id="new-pwd" placeholder="New Password" value="newpassword123">
+        <button onclick="testChangePassword()">Change Password</button>
+        <div id="password-result"></div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        let authToken = localStorage.getItem('authToken');
+
+        async function testLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const resultDiv = document.getElementById('login-result');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    resultDiv.innerHTML = `<span class="success">✓ Login successful</span>`;
+                } else {
+                    resultDiv.innerHTML = `<span class="error">✗ ${data.message}</span>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ ${error.message}</span>`;
+            }
+        }
+
+        async function testUpdateName() {
+            const newName = document.getElementById('new-name').value;
+            const resultDiv = document.getElementById('name-result');
+
+            if (!authToken) {
+                resultDiv.innerHTML = '<span class="error">✗ Please login first</span>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ name: newName })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<span class="success">✓ Name updated successfully</span>`;
+                } else {
+                    resultDiv.innerHTML = `<span class="error">✗ ${data.message}</span>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ ${error.message}</span>`;
+            }
+        }
+
+        async function testSendOTP() {
+            const newEmail = document.getElementById('new-email').value;
+            const resultDiv = document.getElementById('otp-result');
+
+            if (!authToken) {
+                resultDiv.innerHTML = '<span class="error">✗ Please login first</span>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/send-email-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ newEmail })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<span class="success">✓ OTP sent! Development OTP: ${data.developmentOtp}</span>`;
+                    document.getElementById('otp-code').value = data.developmentOtp;
+                } else {
+                    resultDiv.innerHTML = `<span class="error">✗ ${data.message}</span>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ ${error.message}</span>`;
+            }
+        }
+
+        async function testVerifyOTP() {
+            const newEmail = document.getElementById('new-email').value;
+            const otp = document.getElementById('otp-code').value;
+            const resultDiv = document.getElementById('verify-result');
+
+            if (!authToken) {
+                resultDiv.innerHTML = '<span class="error">✗ Please login first</span>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/verify-email-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ newEmail, otp })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<span class="success">✓ Email updated successfully</span>`;
+                } else {
+                    resultDiv.innerHTML = `<span class="error">✗ ${data.message}</span>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ ${error.message}</span>`;
+            }
+        }
+
+        async function testChangePassword() {
+            const currentPassword = document.getElementById('current-pwd').value;
+            const newPassword = document.getElementById('new-pwd').value;
+            const resultDiv = document.getElementById('password-result');
+
+            if (!authToken) {
+                resultDiv.innerHTML = '<span class="error">✗ Please login first</span>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/change-password`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<span class="success">✓ Password changed successfully</span>`;
+                } else {
+                    resultDiv.innerHTML = `<span class="error">✗ ${data.message}</span>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>

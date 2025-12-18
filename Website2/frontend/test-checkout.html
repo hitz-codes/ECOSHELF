@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Checkout</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🛒 Test Checkout Functionality</h1>
+    
+    <div class="test-section">
+        <h3>Step 1: Setup Test Cart</h3>
+        <div id="cart-setup"></div>
+        <button onclick="setupTestCart()">Setup Test Cart</button>
+        <button onclick="clearTestCart()">Clear Cart</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 2: Check Authentication</h3>
+        <div id="auth-status"></div>
+        <button onclick="checkAuth()">Check Auth</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 3: Test Order Creation</h3>
+        <div id="order-test"></div>
+        <button onclick="testOrderCreation()">Test Order API</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 4: Go to Checkout</h3>
+        <a href="checkout.html" style="
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        ">Go to Checkout Page</a>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        function setupTestCart() {
+            const div = document.getElementById('cart-setup');
+            
+            // Create test cart with sample items
+            const testCart = [
+                {
+                    id: '507f1f77bcf86cd799439011', // Sample product ID
+                    name: 'Test Milk',
+                    price: 2.50,
+                    quantity: 2,
+                    seller: 'Test Seller',
+                    image: 'https://via.placeholder.com/100'
+                },
+                {
+                    id: '507f1f77bcf86cd799439012',
+                    name: 'Test Bread',
+                    price: 1.25,
+                    quantity: 1,
+                    seller: 'Test Bakery',
+                    image: 'https://via.placeholder.com/100'
+                }
+            ];
+            
+            localStorage.setItem('cart', JSON.stringify(testCart));
+            localStorage.setItem('checkout_cart', JSON.stringify(testCart));
+            
+            const total = testCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            div.innerHTML = `<span class="success">✅ Test cart created with ${testCart.length} items, Total: $${total.toFixed(2)}</span>`;
+        }
+        
+        function clearTestCart() {
+            localStorage.removeItem('cart');
+            localStorage.removeItem('checkout_cart');
+            document.getElementById('cart-setup').innerHTML = '<span class="info">Cart cleared</span>';
+        }
+        
+        function checkAuth() {
+            const div = document.getElementById('auth-status');
+            const token = getAuthToken();
+            const user = getUser();
+            
+            if (!token) {
+                div.innerHTML = '<span class="error">❌ No auth token - please login first</span>';
+                return false;
+            }
+            
+            if (!user || user.role !== 'buyer') {
+                div.innerHTML = '<span class="error">❌ Not logged in as buyer</span>';
+                return false;
+            }
+            
+            div.innerHTML = `<span class="success">✅ Logged in as: ${user.name} (${user.role})</span>`;
+            return true;
+        }
+        
+        async function testOrderCreation() {
+            const div = document.getElementById('order-test');
+            
+            if (!checkAuth()) {
+                div.innerHTML = '<span class="error">❌ Please login first</span>';
+                return;
+            }
+            
+            const cart = JSON.parse(localStorage.getItem('checkout_cart'));
+            if (!cart || cart.length === 0) {
+                div.innerHTML = '<span class="error">❌ No cart items - setup test cart first</span>';
+                return;
+            }
+            
+            try {
+                div.innerHTML = '<span class="info">Testing order creation...</span>';
+                
+                const orderData = {
+                    items: cart.map(item => ({
+                        product_id: item.id,
+                        quantity: item.quantity
+                    })),
+                    payment_method: 'cod',
+                    delivery_address: 'Test Address, Test City',
+                    notes: 'Test order'
+                };
+                
+                console.log('Order data:', orderData);
+                
+                // Test the API call
+                const response = await API.createOrder(orderData);
+                
+                if (response && response.order) {
+                    div.innerHTML = `<span class="success">✅ Order API works! Order ID: ${response.order.order_id || 'N/A'}</span>`;
+                } else {
+                    div.innerHTML = '<span class="error">❌ Order API returned invalid response</span>';
+                }
+                
+            } catch (error) {
+                console.error('Order test error:', error);
+                div.innerHTML = `<span class="error">❌ Order API error: ${error.message}</span>`;
+            }
+        }
+        
+        // Auto-run checks
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

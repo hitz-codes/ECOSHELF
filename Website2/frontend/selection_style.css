@@ -1,0 +1,140 @@
+/* ======== GLOBAL & BODY ======== */
+:root {
+    /* Coffee Palette */
+    --primary-color: #561C24;   /* Deep Maroon (for Buyer) */
+    --accent-color: #6D2932;    /* Medium Maroon (for Seller) */
+    --background-color: #C7B7A3; /* Taupe */
+    --card-background: #E8D8C4; /* Light Cream */
+    --text-color: #333;
+    --light-text-color: #555;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background-color); /* NEW: Taupe */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+    
+    /* ======== MODIFIED: Added for background layer ======== */
+    position: relative;
+    z-index: 1;
+}
+
+/* ======== NEW: Background Image Layer ======== */
+body::before {
+    content: "";
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* 1. Make sure 'bgnew.jpg' is in the same folder */
+    background-image: url('./bgnew.jpg'); 
+    background-repeat: repeat;
+    
+    /* 2. Set opacity (0.3 is subtle, 1.0 is full) */
+    opacity: 0.3; 
+    
+    /* 3. Blends the image with the Taupe background color */
+    background-blend-mode: multiply; 
+    
+    /* 4. Sits behind the content */
+    z-index: -1;
+}
+
+/* Serif font for headings */
+h1, h2, h3, h4 {
+    font-family: "Times New Roman", Times, serif;
+}
+
+.selection-container {
+    max-width: 800px;
+    margin: 2rem;
+}
+
+.selection-container h1 {
+    font-size: 3.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.selection-container p {
+    font-size: 1.25rem;
+    color: var(--light-text-color);
+    margin-bottom: 1rem;
+}
+
+.selection-container .prompt {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- ADD THIS NEW RULE --- */
+.selection-container .subtitle {
+    color: var(--text-color); /* This changes it from light #555 to darker #333 */
+}   
+
+.role-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .role-options {
+        flex-direction: row;
+    }
+}
+
+.role-card {
+    flex: 1;
+    background-color: var(--card-background);
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.role-card h2 {
+    font-size: 1.75rem;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+}
+
+.role-card p {
+    color: var(--light-text-color);
+    font-size: 1rem;
+}
+
+/* Specific styling for buyer and seller cards */
+#buyer-card:hover {
+    border-color: var(--primary-color);
+}
+
+#buyer-card h2 {
+    color: var(--primary-color);
+}
+
+#seller-card:hover {
+    border-color: var(--accent-color);
+}
+
+#seller-card h2 {
+    color: var(--accent-color);
+}

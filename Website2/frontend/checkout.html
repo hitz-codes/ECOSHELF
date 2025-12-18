@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - EcoMart</title>
+    <link rel="stylesheet" href="checkout.css">
+</head>
+<body>
+
+    <header class="checkout-header">
+        <div class="container">
+            <a href="consumer_home.html" class="logo">EcoMart</a>
+            <h2 class="page-title">Secure Checkout</h2>
+        </div>
+    </header>
+
+    <main class="checkout-container container">
+
+        <section class="order-summary">
+            <h3>Your Order Summary</h3>
+            <div class="summary-card">
+                <div class="loading">Loading order summary...</div>
+            </div>
+        </section>
+
+        <section class="payment-details">
+            <div class="payment-card">
+                <h3>Delivery Address</h3>
+                <div class="address-details">
+                    <div class="loading">Loading address...</div>
+                </div>
+            </div>
+
+            <div class="payment-card">
+                <h3>Select Payment Method</h3>
+                <div class="payment-options">
+                    <div class="payment-option">
+                        <input type="radio" id="pay-card" name="payment-method" value="card" checked>
+                        <label for="pay-card">Online Banking (Card)</label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" id="pay-upi" name="payment-method" value="upi">
+                        <label for="pay-upi">UPI</label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" id="pay-cod" name="payment-method" value="cod">
+                        <label for="pay-cod">Cash on Delivery</label>
+                    </div>
+                </div>
+
+                <div class="payment-info">
+                    <div id="card-details" class="payment-content active">
+                        <input type="text" placeholder="Card Number" required>
+                        <select>
+                            <option disabled selected>Card Type</option>
+                            <option>Visa</option>
+                            <option>Mastercard</option>
+                        </select>
+                        <input type="text" placeholder="MM / YY" required>
+                        <input type="text" placeholder="CVV" required>
+                    </div>
+
+                    <div id="upi-details" class="payment-content">
+                        <input type="text" placeholder="Enter your UPI ID (e.g., user@okhdfcbank)" required>
+                    </div>
+
+                    <div id="cod-details" class="payment-content">
+                        <p>You can pay in cash to the delivery agent upon arrival.</p>
+                    </div>
+                </div>
+
+                <button id="place-order-btn" class="place-order-button">Place Order</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="api.js"></script>
+    <script src="checkout.js"></script>
+</body>
+</html>

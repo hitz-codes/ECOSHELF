@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Orders API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Orders API</h1>
+    
+    <div class="test-section">
+        <h3>Step 1: Check Authentication</h3>
+        <div id="auth-check"></div>
+        <button onclick="checkAuth()">Check Auth</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 2: Test API Connection</h3>
+        <div id="api-test"></div>
+        <button onclick="testAPIConnection()">Test API</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 3: Test Orders Endpoint</h3>
+        <div id="orders-test"></div>
+        <button onclick="testOrdersEndpoint()">Test Orders API</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 4: Raw API Call</h3>
+        <div id="raw-test"></div>
+        <button onclick="testRawAPI()">Raw API Call</button>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        function checkAuth() {
+            const div = document.getElementById('auth-check');
+            const token = getAuthToken();
+            const user = getUser();
+            
+            let html = '<h4>Authentication Status:</h4>';
+            
+            if (!token) {
+                html += '<span class="error">❌ No auth token found</span>';
+                html += '<p>Please login at: <a href="login.html">login.html</a></p>';
+            } else {
+                html += `<span class="success">✅ Token found: ${token.substring(0, 20)}...</span><br>`;
+            }
+            
+            if (!user) {
+                html += '<span class="error">❌ No user data found</span>';
+            } else {
+                html += `<span class="success">✅ User: ${user.name} (${user.role})</span><br>`;
+                html += `<pre>${JSON.stringify(user, null, 2)}</pre>`;
+            }
+            
+            html += `<p><strong>API Base URL:</strong> ${API_BASE_URL}</p>`;
+            
+            div.innerHTML = html;
+        }
+        
+        async function testAPIConnection() {
+            const div = document.getElementById('api-test');
+            
+            try {
+                div.innerHTML = '<span class="info">Testing API connection...</span>';
+                
+                const response = await fetch(`${API_BASE_URL}/products?limit=1`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    div.innerHTML = '<span class="success">✅ API connection works</span>';
+                } else {
+                    div.innerHTML = `<span class="error">❌ API error: ${data.message}</span>`;
+                }
+            } catch (error) {
+                div.innerHTML = `<span class="error">❌ Connection error: ${error.message}</span>`;
+            }
+        }
+        
+        async function testOrdersEndpoint() {
+            const div = document.getElementById('orders-test');
+            
+            const token = getAuthToken();
+            if (!token) {
+                div.innerHTML = '<span class="error">❌ No auth token - login first</span>';
+                return;
+            }
+            
+            try {
+                div.innerHTML = '<span class="info">Testing orders endpoint...</span>';
+                
+                const data = await API.getMyOrders({ limit: 5 });
+                
+                div.innerHTML = `
+                    <span class="success">✅ Orders API works!</span>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('Orders API error:', error);
+                div.innerHTML = `
+                    <span class="error">❌ Orders API error: ${error.message}</span>
+                    <pre>Full error: ${JSON.stringify(error, null, 2)}</pre>
+                `;
+            }
+        }
+        
+        async function testRawAPI() {
+            const div = document.getElementById('raw-test');
+            
+            const token = getAuthToken();
+            if (!token) {
+                div.innerHTML = '<span class="error">❌ No auth token - login first</span>';
+                return;
+            }
+            
+            try {
+                div.innerHTML = '<span class="info">Making raw API call...</span>';
+                
+                const response = await fetch(`${API_BASE_URL}/orders/my-orders`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const responseText = await response.text();
+                let responseData;
+                
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch (e) {
+                    responseData = responseText;
+                }
+                
+                div.innerHTML = `
+                    <h4>Raw API Response:</h4>
+                    <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                    <p><strong>Headers:</strong></p>
+                    <pre>${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}</pre>
+                    <p><strong>Response:</strong></p>
+                    <pre>${JSON.stringify(responseData, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('Raw API error:', error);
+                div.innerHTML = `
+                    <span class="error">❌ Raw API error: ${error.message}</span>
+                    <pre>${JSON.stringify(error, null, 2)}</pre>
+                `;
+            }
+        }
+        
+        // Auto-run checks
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

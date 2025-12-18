@@ -1,0 +1,180 @@
+/* ======== GLOBAL & BODY ======== */
+:root {
+    /* NEW: Coffee Palette */
+    --primary-color: #561C24;   /* Deep Maroon */
+    --accent-color: #6D2932;    /* Medium Maroon (for seller btn) */
+    --background-color: #C7B7A3; /* Taupe */
+    --card-background: #E8D8C4; /* Light Cream */
+    --danger-color: #dc3545;
+    --text-color: #333;
+    --light-text-color: #555;
+    --border-color: #C7B7A3; /* Taupe */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background-color); /* NEW: Taupe */
+    margin: 0;
+    display: flex; /* Helps center the card */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 3rem 1rem; /* Padding for small screens */
+    box-sizing: border-box;
+    
+    /* ======== NEW: Added for background layer ======== */
+    position: relative;
+    z-index: 1;
+}
+
+/* ======== NEW: Background Image Layer ======== */
+body::before {
+    content: "";
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* 1. Make sure 'lock.jpg' is in the same folder */
+    background-image: url('./lock.jpg'); 
+    background-repeat: repeat;
+    
+    /* 2. Set opacity (0.15 is subtle, 0.5 is more visible) */
+    opacity: 0.15; 
+    
+    /* 3. Blends the image with the Taupe background color */
+    background-blend-mode: multiply; 
+    
+    /* 4. Sits behind the content */
+    z-index: -1;
+}
+
+
+/* NEW: Serif font for headings */
+h1, h2, h3, h4, .logo {
+    font-family: "Times New Roman", Times, serif;
+}
+
+/* ======== Signup Container ======== */
+.signup-container {
+    background-color: var(--card-background); /* NEW: Light Cream */
+    padding: 2.5rem;
+    border-radius: 16px; /* Matching login card */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+/* NEW: Logo at top of card */
+.logo {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.signup-container h1 {
+    font-size: 2rem;
+    color: var(--primary-color); /* NEW: Deep Maroon */
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.signup-container p {
+    color: var(--light-text-color);
+    margin-bottom: 2rem;
+}
+
+/* ======== Form Styling ======== */
+.input-group {
+    text-align: left;
+    margin-bottom: 1.25rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #444;
+}
+
+.input-group input,
+.input-group textarea {
+    width: 100%;
+    padding: 0.85rem; /* Matching login inputs */
+    border: 1px solid var(--border-color); /* NEW: Taupe */
+    border-radius: 8px; /* Matching login inputs */
+    box-sizing: border-box; 
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: #fff; /* White for readability */
+}
+
+.input-group textarea {
+    resize: vertical;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(86, 28, 36, 0.1); /* Soft maroon shadow */
+}
+
+/* ======== Buttons ======== */
+.signup-button {
+    width: 100%;
+    padding: 0.85rem; /* Matching login button */
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-color); /* NEW: Deep Maroon */
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 1rem;
+}
+
+.signup-button:hover {
+    background-color: var(--accent-color); /* NEW: Medium Maroon */
+}
+
+/* Seller Button Style */
+.signup-button-seller {
+    background-color: var(--accent-color); /* NEW: Medium Maroon */
+}
+
+.signup-button-seller:hover {
+    background-color: var(--primary-color); /* NEW: Deep Maroon */
+}
+
+/* ======== Links & Errors ======== */
+.login-link {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+}
+
+.login-link a {
+    color: var(--primary-color); /* NEW: Deep Maroon */
+    text-decoration: none;
+    font-weight: 600; /* Matching login link */
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.error-text {
+    color: var(--danger-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    text-align: left; /* Better alignment */
+    display: none;
+}

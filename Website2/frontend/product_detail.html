@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail - EcoMart</title>
+    <link rel="stylesheet" href="consumer_home.css">
+    <link rel="stylesheet" href="product_detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="consumer_home.html" class="logo">EcoMart</a>
+            <div class="nav-links">
+                <a href="consumer_home.html#shop">Shop</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" placeholder="Search for products...">
+            </div>
+            <div class="nav-actions">
+                <a href="account.html" class="nav-icon-btn">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <button id="cart-btn" class="nav-cart-btn">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cart-count">0</span>
+                    <span>Cart</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="product-container">
+        <div class="product-main-card">
+            <div class="product-image-gallery">
+                <img src="https://via.placeholder.com/600x600/F8D7DA/DC3545?text=Milk" alt="Fresh Milk">
+            </div>
+
+            <div class="product-details-content">
+                <h1>Fresh Milk</h1>
+                <p class="product-brand">Sold by: <a href="#seller-info">EcoFarm Dairy</a></p>
+                
+                <div class="price-box">
+                    <span class="price-old">$3.00</span>
+                    <span class="price-new">$1.50</span>
+                </div>
+
+                <div class="expiry-info">
+                    <strong><i class="fa-solid fa-calendar-times"></i> Expires in:</strong> 2 days
+                </div>
+                
+                <p class="short-description">
+                    A brief, enticing description of the product. Fresh, pasteurized cow's milk, perfect for your daily needs.
+                </p>
+
+                <button class="add-to-cart-btn-large">
+                    <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+
+        <div class="product-info-tabs">
+            <div class="tab-headers">
+                <button class="tab-link active" data-tab="tab-description">Product Description</button>
+                <button class="tab-link" data-tab="tab-warehouse">Warehouse Details</button>
+                <button class="tab-link" data-tab="tab-seller">Seller Details</button>
+            </div>
+
+            <div class="tab-content-wrapper">
+                <div id="tab-description" class="tab-content active">
+                    <h3>Description</h3>
+                    <p>This is the full seller description. Our fresh milk is sourced from local, grass-fed cows and bottled daily. It contains essential nutrients like Calcium and Vitamin D. Perfect for cereal, coffee, or just a refreshing glass.</p>
+                    <p><strong>Note:</strong> As this is a near-expiry product, please consume it within 3 days of purchase and store it below 4°C.</p>
+                </div>
+                <div id="tab-warehouse" class="tab-content">
+                    <h3>Warehouse Details</h3>
+                    <p><strong>Warehouse:</strong> EcoMart Central Cold Storage</p>
+                    <p><strong>Address:</strong> 123 Refrigeration Row, Anytown, 12345</p>
+                    <p><strong>Quality Control:</strong> All dairy products are stored in a temperature-controlled environment (2-4°C) and checked daily for quality assurance. Our facility is certified by the Local Food Safety Authority.</p>
+                </div>
+                <div id="tab-seller" class="tab-content">
+                    <h3>Seller: EcoFarm Dairy</h3>
+                    <p><strong>Franchise Name:</strong> EcoFarm Dairy</p>
+                    <p>A trusted local dairy provider committed to sustainable farming and fresh products.</p>
+                    <div class="reviews">
+                        <strong>Reviews (4.5/5 stars)</strong>
+                        <div class="review-item">
+                            <p>"Great price and still perfectly fresh!" - Alex D.</p>
+                        </div>
+                        <div class="review-item">
+                            <p>"My go-to for saving money on daily essentials." - Maria S.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="reviews-section">
+            <h2>Customer Reviews</h2>
+            <button class="write-review-btn">Write a Review</button>
+            <div class="review-list">
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="star-rating">★★★★☆</span>
+                        <strong class="review-user">Alex D.</strong>
+                        <span class="review-date">Oct 28, 2025</span>
+                    </div>
+                    <p class="review-body">"Great price and still perfectly fresh! Arrived cold and on time."</p>
+                </div>
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="star-rating">★★★★★</span>
+                        <strong class="review-user">Maria S.</strong>
+                        <span class="review-date">Oct 25, 2025</span>
+                    </div>
+                    <p class="review-body">"My go-to for saving money on daily essentials. This is the third time I've bought this."</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="recommended-products">
+            <h2>You May Also Like</h2>
+            
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-expiry-tag">Expires in 3 days</div>
+                    <a href="product_detail.html" class="product-link">
+                        <img src="https://via.placeholder.com/200/D4EDDA/28A745?text=Bread" alt="Product Image">
+                        <h3>Whole Wheat Bread</h3>
+                    </a>
+                    <p class="product-brand">Bakery Co.</p>
+                    <div class="product-price">
+                        <span class="price-old">$2.50</span>
+                        <span class="price-new">$0.75</span>
+                    </div>
+                    <button class="add-to-cart-btn" data-product="Whole Wheat Bread" data-price="0.75">Add to Cart</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-expiry-tag">Expires in 1 day</div>
+                    <a href="product_detail.html" class="product-link">
+                        <img src="https://via.placeholder.com/200/FFF4B8/FFC107?text=Apples" alt="Product Image">
+                        <h3>Fresh Apples (1kg)</h3>
+                    </a>
+                    <p class="product-brand">Farm Fresh</p>
+                    <div class="product-price">
+                        <span class="price-old">$4.00</span>
+                        <span class="price-new">$1.00</span>
+                    </div>
+                    <button class="add-to-cart-btn" data-product="Fresh Apples" data-price="1.00">Add to Cart</button>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-expiry-tag">Expires in 2 days</div>
+                    <a href="product_detail.html" class="product-link">
+                        <img src="https://via.placeholder.com/200/E2E3E5/6C757D?text=Eggs" alt="Product Image">
+                        <h3>Organic Eggs (12)</h3>
+                    </a>
+                    <p class="product-brand">EcoFarm Dairy</p>
+                    <div class="product-price">
+                        <span class="price-old">$5.00</span>
+                        <span class="price-new">$2.50</span>
+                    </div>
+                    <button class="add-to-cart-btn" data-product="Organic Eggs" data-price="2.50">Add to Cart</button>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-expiry-tag">Expires today!</div>
+                    <a href="product_detail.html" class="product-link">
+                        <img src="https://via.placeholder.com/200/CCE5FF/007BFF?text=Yogurt" alt="Product Image">
+                        <h3>Greek Yogurt</h3>
+                    </a>
+                    <p class="product-brand">DairyBest</p>
+                    <div class="product-price">
+                        <span class="price-old">$3.00</span>
+                        <span class="price-new">$0.50</span>
+                    </div>
+                    <button class="add-to-cart-btn" data-product="Greek Yogurt" data-price="0.50">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <script src="api.js"></script>
+    <script src="product_detail.js"></script>
+    <div id="modal-overlay" class="hidden"></div>
+
+    <div id="profile-modal" class="modal-drawer">
+        </div>
+
+    <div id="cart-modal" class="modal-drawer">
+        <div class="modal-header">
+            <h2>Your Cart</h2>
+            <button id="cart-close-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-content">
+            <div id="cart-items-list">
+                <p class="cart-empty-msg">Your cart is empty.</p>
+                </div>
+            
+            <div class="cart-summary">
+                <p>Total: <span id="cart-total">$0.00</span></p>
+                <button class="checkout-btn">Proceed to Purchase</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

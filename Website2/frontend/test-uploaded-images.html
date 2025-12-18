@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Uploaded Images</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .image-test { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .image-test img { max-width: 200px; max-height: 200px; border: 1px solid #ccc; margin: 10px; }
+        .url { font-family: monospace; background: #f5f5f5; padding: 5px; border-radius: 3px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🖼️ Test Uploaded Images</h1>
+    
+    <div class="image-test">
+        <h3>Direct Image Access Test</h3>
+        <p>Testing uploaded images directly:</p>
+        
+        <div>
+            <strong>Image 1:</strong><br>
+            <span class="url">http://10.100.8.238:5000/uploads/products/product_image-1765888583174-379477803.jpg</span><br>
+            <img src="http://10.100.8.238:5000/uploads/products/product_image-1765888583174-379477803.jpg" 
+                 alt="Uploaded Image 1" 
+                 onerror="this.style.border='2px solid red'; this.alt='Failed to load';">
+        </div>
+        
+        <div>
+            <strong>Image 2:</strong><br>
+            <span class="url">http://10.100.8.238:5000/uploads/products/product_image-1765889331556-577761059.jpg</span><br>
+            <img src="http://10.100.8.238:5000/uploads/products/product_image-1765889331556-577761059.jpg" 
+                 alt="Uploaded Image 2" 
+                 onerror="this.style.border='2px solid red'; this.alt='Failed to load';">
+        </div>
+    </div>
+    
+    <div class="image-test">
+        <h3>Products with Uploaded Images</h3>
+        <div id="uploaded-products"></div>
+        <button onclick="loadUploadedProducts()">Load Products with Uploaded Images</button>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        async function loadUploadedProducts() {
+            const div = document.getElementById('uploaded-products');
+            
+            try {
+                div.innerHTML = '<p>Loading products...</p>';
+                
+                const data = await API.getProducts({ limit: 20 });
+                
+                // Filter products with uploaded images (relative paths)
+                const uploadedProducts = data.products.filter(p => 
+                    p.image_url && p.image_url.startsWith('/uploads/')
+                );
+                
+                if (uploadedProducts.length === 0) {
+                    div.innerHTML = '<p>No products with uploaded images found.</p>';
+                    return;
+                }
+                
+                let html = `<p>Found ${uploadedProducts.length} products with uploaded images:</p>`;
+                
+                uploadedProducts.forEach(product => {
+                    const fullImageUrl = `${API_BASE_URL.replace('/api', '')}${product.image_url}`;
+                    
+                    html += `
+                        <div style="border: 1px solid #eee; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                            <strong>${product.name}</strong> (${product.category})<br>
+                            <span style="color: #666;">Seller: ${product.seller_name}</span><br>
+                            <span style="color: #666;">Image path: ${product.image_url}</span><br>
+                            <span style="color: #666;">Full URL: ${fullImageUrl}</span><br>
+                            <img src="${fullImageUrl}" alt="${product.name}" 
+                                 style="max-width: 150px; max-height: 150px; margin-top: 10px; border: 1px solid #ccc;"
+                                 onerror="this.style.border='2px solid red'; this.alt='Failed to load';">
+                        </div>
+                    `;
+                });
+                
+                div.innerHTML = html;
+                
+            } catch (error) {
+                div.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Auto-load on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUploadedProducts();
+        });
+    </script>
+</body>
+</html>

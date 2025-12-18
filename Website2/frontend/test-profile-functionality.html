@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Functionality Test</title>
+    <link rel="stylesheet" href="consumer_home.css">
+    <link rel="stylesheet" href="account.css">
+    <style>
+        .test-container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .test-button { padding: 10px 15px; margin: 5px; background: #561c24; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .test-button:hover { background: #7d2a35; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        input { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Profile Editing Functionality Test</h1>
+        
+        <div class="test-section">
+            <h3>Step 1: Login</h3>
+            <input type="email" id="test-email" value="buyer@example.com" placeholder="Email">
+            <input type="password" id="test-password" value="password123" placeholder="Password">
+            <button class="test-button" onclick="testLogin()">Login</button>
+            <div id="login-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 2: Test Profile Page Load</h3>
+            <button class="test-button" onclick="testProfilePageLoad()">Load Profile Page</button>
+            <div id="profile-load-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 3: Test Name Update</h3>
+            <input type="text" id="test-new-name" value="Test Updated Name" placeholder="New Name">
+            <button class="test-button" onclick="testNameUpdate()">Update Name</button>
+            <div id="name-update-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 4: Test Email OTP</h3>
+            <input type="email" id="test-new-email" value="updated@example.com" placeholder="New Email">
+            <button class="test-button" onclick="testEmailOTP()">Send OTP</button>
+            <div id="email-otp-result"></div>
+            
+            <div style="margin-top: 10px;">
+                <input type="text" id="test-otp" placeholder="Enter OTP" maxlength="6">
+                <button class="test-button" onclick="testVerifyOTP()">Verify OTP</button>
+                <div id="verify-otp-result"></div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 5: Test Password Change</h3>
+            <input type="password" id="test-current-pwd" value="password123" placeholder="Current Password">
+            <input type="password" id="test-new-pwd" value="newpassword123" placeholder="New Password">
+            <button class="test-button" onclick="testPasswordChange()">Change Password</button>
+            <div id="password-change-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 6: Open Actual Profile Page</h3>
+            <button class="test-button" onclick="openProfilePage()">Open login_security.html</button>
+            <div id="profile-page-result"></div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        let testToken = null;
+        let testUser = null;
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    testToken = data.token;
+                    testUser = data.user;
+                    localStorage.setItem('token', testToken);
+                    localStorage.setItem('user', JSON.stringify(testUser));
+                    showResult('login-result', `✓ Login successful! User: ${testUser.name} (${testUser.email})`, 'success');
+                } else {
+                    showResult('login-result', `✗ Login failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('login-result', `✗ Login error: ${error.message}`, 'error');
+            }
+        }
+
+        function testProfilePageLoad() {
+            if (!testToken) {
+                showResult('profile-load-result', '✗ Please login first', 'error');
+                return;
+            }
+
+            // Test if the profile page functions are available
+            try {
+                // Check if we can access the functions that would be loaded
+                showResult('profile-load-result', '✓ Ready to test profile functionality. Token and user data are set.', 'success');
+            } catch (error) {
+                showResult('profile-load-result', `✗ Profile page load error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testNameUpdate() {
+            if (!testToken) {
+                showResult('name-update-result', '✗ Please login first', 'error');
+                return;
+            }
+
+            const newName = document.getElementById('test-new-name').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${testToken}`
+                    },
+                    body: JSON.stringify({ name: newName })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('name-update-result', `✓ Name updated successfully to: ${newName}`, 'success');
+                    // Update local storage
+                    testUser.name = newName;
+                    localStorage.setItem('user', JSON.stringify(testUser));
+                } else {
+                    showResult('name-update-result', `✗ Name update failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('name-update-result', `✗ Name update error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testEmailOTP() {
+            if (!testToken) {
+                showResult('email-otp-result', '✗ Please login first', 'error');
+                return;
+            }
+
+            const newEmail = document.getElementById('test-new-email').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/send-email-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${testToken}`
+                    },
+                    body: JSON.stringify({ newEmail })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('email-otp-result', `✓ OTP sent successfully! Development OTP: ${data.developmentOtp}`, 'success');
+                    // Auto-fill the OTP for testing
+                    document.getElementById('test-otp').value = data.developmentOtp;
+                } else {
+                    showResult('email-otp-result', `✗ OTP send failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('email-otp-result', `✗ OTP send error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testVerifyOTP() {
+            if (!testToken) {
+                showResult('verify-otp-result', '✗ Please login first', 'error');
+                return;
+            }
+
+            const newEmail = document.getElementById('test-new-email').value;
+            const otp = document.getElementById('test-otp').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/verify-email-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${testToken}`
+                    },
+                    body: JSON.stringify({ newEmail, otp })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('verify-otp-result', `✓ Email updated successfully to: ${newEmail}`, 'success');
+                    // Update local storage
+                    testUser.email = newEmail;
+                    localStorage.setItem('user', JSON.stringify(testUser));
+                } else {
+                    showResult('verify-otp-result', `✗ OTP verification failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('verify-otp-result', `✗ OTP verification error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testPasswordChange() {
+            if (!testToken) {
+                showResult('password-change-result', '✗ Please login first', 'error');
+                return;
+            }
+
+            const currentPassword = document.getElementById('test-current-pwd').value;
+            const newPassword = document.getElementById('test-new-pwd').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/change-password`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${testToken}`
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('password-change-result', '✓ Password changed successfully!', 'success');
+                } else {
+                    showResult('password-change-result', `✗ Password change failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('password-change-result', `✗ Password change error: ${error.message}`, 'error');
+            }
+        }
+
+        function openProfilePage() {
+            if (!testToken) {
+                showResult('profile-page-result', '✗ Please login first', 'error');
+                return;
+            }
+
+            showResult('profile-page-result', '✓ Opening profile page in new tab...', 'success');
+            window.open('login_security.html', '_blank');
+        }
+
+        // Auto-load token if already logged in
+        window.addEventListener('load', () => {
+            const storedToken = localStorage.getItem('token');
+            const storedUser = localStorage.getItem('user');
+            
+            if (storedToken && storedUser) {
+                testToken = storedToken;
+                testUser = JSON.parse(storedUser);
+                showResult('login-result', `✓ Already logged in as: ${testUser.name} (${testUser.email})`, 'success');
+            }
+        });
+    </script>
+</body>
+</html>

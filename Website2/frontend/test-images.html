@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Product Images</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .product-item { border: 1px solid #eee; padding: 15px; margin: 10px 0; border-radius: 5px; display: flex; align-items: center; gap: 15px; }
+        .product-image { width: 100px; height: 100px; object-fit: cover; border-radius: 5px; border: 1px solid #ddd; }
+        .product-info { flex: 1; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        .url-test { background: #f8f9fa; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>🖼️ Test Product Images</h1>
+    
+    <div class="test-section">
+        <h3>Image URL Construction Test</h3>
+        <div id="url-test"></div>
+        <button onclick="testURLConstruction()">Test URL Construction</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Products with Images</h3>
+        <div id="products-with-images"></div>
+        <button onclick="loadProductsWithImages()">Load Products</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Direct Image Access Test</h3>
+        <div id="direct-image-test"></div>
+        <button onclick="testDirectImageAccess()">Test Direct Access</button>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        function testURLConstruction() {
+            const div = document.getElementById('url-test');
+            
+            const apiBaseUrl = API_BASE_URL;
+            const backendBaseUrl = apiBaseUrl.replace('/api', '');
+            const sampleImagePath = '/uploads/products/sample.jpg';
+            const fullImageUrl = `${backendBaseUrl}${sampleImagePath}`;
+            
+            div.innerHTML = `
+                <div class="url-test">
+                    <strong>API Base URL:</strong> ${apiBaseUrl}<br>
+                    <strong>Backend Base URL:</strong> ${backendBaseUrl}<br>
+                    <strong>Sample Image Path:</strong> ${sampleImagePath}<br>
+                    <strong>Full Image URL:</strong> ${fullImageUrl}
+                </div>
+            `;
+        }
+        
+        async function loadProductsWithImages() {
+            const div = document.getElementById('products-with-images');
+            
+            try {
+                div.innerHTML = '<span class="info">Loading products...</span>';
+                
+                const data = await API.getProducts({ limit: 10 });
+                
+                if (data.products && data.products.length > 0) {
+                    let html = `<span class="success">✅ Found ${data.products.length} products</span><br><br>`;
+                    
+                    data.products.forEach(product => {
+                        const imageUrl = product.image_url ? 
+                            `${API_BASE_URL.replace('/api', '')}${product.image_url}` : 
+                            'https://via.placeholder.com/100/E2E3E5/6C757D?text=Product';
+                        
+                        html += `
+                            <div class="product-item">
+                                <img src="${imageUrl}" alt="${product.name}" class="product-image" 
+                                     onerror="this.style.border='2px solid red'; this.alt='Image failed to load';">
+                                <div class="product-info">
+                                    <strong>${product.name}</strong><br>
+                                    <span style="color: #666;">Category: ${product.category}</span><br>
+                                    <span style="color: #666;">Price: $${product.discounted_price.toFixed(2)}</span><br>
+                                    <span style="color: #666;">Image Path: ${product.image_url || 'No image'}</span><br>
+                                    <span style="color: #666;">Full URL: ${imageUrl}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    div.innerHTML = html;
+                } else {
+                    div.innerHTML = '<span class="info">No products found</span>';
+                }
+                
+            } catch (error) {
+                console.error('Load products error:', error);
+                div.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+        
+        async function testDirectImageAccess() {
+            const div = document.getElementById('direct-image-test');
+            
+            try {
+                div.innerHTML = '<span class="info">Testing direct image access...</span>';
+                
+                const backendBaseUrl = API_BASE_URL.replace('/api', '');
+                const testUrls = [
+                    `${backendBaseUrl}/uploads/products/`,
+                    `${backendBaseUrl}/uploads/`,
+                    `${backendBaseUrl}/`
+                ];
+                
+                let html = '<h4>Testing Backend Endpoints:</h4>';
+                
+                for (const url of testUrls) {
+                    try {
+                        const response = await fetch(url);
+                        html += `
+                            <div class="url-test">
+                                <strong>${url}</strong><br>
+                                Status: ${response.status} ${response.statusText}<br>
+                                ${response.status === 200 ? '✅ Accessible' : '❌ Not accessible'}
+                            </div>
+                        `;
+                    } catch (error) {
+                        html += `
+                            <div class="url-test">
+                                <strong>${url}</strong><br>
+                                Error: ${error.message}<br>
+                                ❌ Failed to connect
+                            </div>
+                        `;
+                    }
+                }
+                
+                div.innerHTML = html;
+                
+            } catch (error) {
+                div.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+        
+        // Auto-run tests
+        document.addEventListener('DOMContentLoaded', () => {
+            testURLConstruction();
+        });
+    </script>
+</body>
+</html>

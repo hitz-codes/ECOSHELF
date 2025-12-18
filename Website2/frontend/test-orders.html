@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Orders</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🛍️ Test Orders Functionality</h1>
+    
+    <div class="test-section">
+        <h3>Step 1: Check Authentication</h3>
+        <div id="auth-status"></div>
+        <button onclick="checkAuth()">Check Auth</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 2: Test Orders API</h3>
+        <div id="orders-test"></div>
+        <button onclick="testOrdersAPI()">Test Get Orders</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 3: Create Test Order</h3>
+        <div id="create-order"></div>
+        <button onclick="createTestOrder()">Create Test Order</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 4: Go to Orders Page</h3>
+        <a href="orders.html" style="
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        ">View Orders Page</a>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        function checkAuth() {
+            const div = document.getElementById('auth-status');
+            const token = getAuthToken();
+            const user = getUser();
+            
+            if (!token) {
+                div.innerHTML = '<span class="error">❌ No auth token - please login first</span>';
+                return false;
+            }
+            
+            if (!user || user.role !== 'buyer') {
+                div.innerHTML = '<span class="error">❌ Not logged in as buyer</span>';
+                return false;
+            }
+            
+            div.innerHTML = `<span class="success">✅ Logged in as: ${user.name} (${user.role})</span>`;
+            return true;
+        }
+        
+        async function testOrdersAPI() {
+            const div = document.getElementById('orders-test');
+            
+            if (!checkAuth()) {
+                div.innerHTML = '<span class="error">❌ Please login first</span>';
+                return;
+            }
+            
+            try {
+                div.innerHTML = '<span class="info">Testing orders API...</span>';
+                
+                const data = await API.getMyOrders({ limit: 10 });
+                
+                if (data && data.orders) {
+                    div.innerHTML = `
+                        <span class="success">✅ Orders API works! Found ${data.orders.length} orders</span>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    div.innerHTML = '<span class="error">❌ Orders API returned invalid response</span>';
+                }
+                
+            } catch (error) {
+                console.error('Orders test error:', error);
+                div.innerHTML = `<span class="error">❌ Orders API error: ${error.message}</span>`;
+            }
+        }
+        
+        async function createTestOrder() {
+            const div = document.getElementById('create-order');
+            
+            if (!checkAuth()) {
+                div.innerHTML = '<span class="error">❌ Please login first</span>';
+                return;
+            }
+            
+            try {
+                div.innerHTML = '<span class="info">Creating test order...</span>';
+                
+                // Create a test order
+                const orderData = {
+                    items: [
+                        {
+                            product_id: '507f1f77bcf86cd799439011', // Sample product ID
+                            quantity: 1
+                        }
+                    ],
+                    payment_method: 'cod',
+                    delivery_address: 'Test Address, Test City, 12345',
+                    notes: 'Test order from orders test page'
+                };
+                
+                const response = await API.createOrder(orderData);
+                
+                if (response && response.order) {
+                    div.innerHTML = `
+                        <span class="success">✅ Test order created! Order ID: ${response.order.order_id}</span>
+                        <p>Now you can check the orders page to see it.</p>
+                    `;
+                } else {
+                    div.innerHTML = '<span class="error">❌ Failed to create test order</span>';
+                }
+                
+            } catch (error) {
+                console.error('Create order error:', error);
+                div.innerHTML = `<span class="error">❌ Create order error: ${error.message}</span>`;
+            }
+        }
+        
+        // Auto-run checks
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

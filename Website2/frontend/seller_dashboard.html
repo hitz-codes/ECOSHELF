@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard - EcoMart</title>
+    <link rel="stylesheet" href="seller_dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <header class="seller-header">
+        <div class="header-container">
+            <h1><i class="fa-solid fa-store"></i> Seller Dashboard</h1>
+            <a href="index.html" class="logout-btn">Logout</a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <nav class="sidebar">
+            <ul>
+                <li><a href="#dashboard" id="nav-dashboard" class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="#my-products" id="nav-products"><i class="fa-solid fa-box-archive"></i> My Products</a></li>
+                <li><a href="#add-product" id="nav-add-product"><i class="fa-solid fa-plus-circle"></i> Add New Product</a></li>
+                <li><a href="#settings"><i class="fa-solid fa-gear"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+
+            <section id="dashboard" class="content-section active">
+                <h2>Dashboard Summary</h2>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <h3>Total Listings</h3>
+                        <p>12</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Items Sold (24h)</h3>
+                        <p>4</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Revenue</h3>
+                        <p>$350.00</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Nearing Expiry</h3>
+                        <p>3</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="my-products" class="content-section">
+                <h2>My Products</h2>
+                <div class="product-table-container">
+                    <table id="product-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Expiry Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-list">
+                            <tr>
+                                <td>Fresh Milk</td>
+                                <td>Normal</td>
+                                <td>$1.50</td>
+                                <td>20</td>
+                                <td>2025-11-03</td>
+                                <td>
+                                    <button class="btn-edit"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-delete"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Organic Mangoes</td>
+                                <td>Seasonal</td>
+                                <td>$4.00</td>
+                                <td>50</td>
+                                <td>2025-11-05</td>
+                                <td>
+                                    <button class="btn-edit"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-delete"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="add-product" class="content-section">
+                <h2>Add New Product</h2>
+                <form id="add-product-form" class="product-form">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="product-name">Product Name</label>
+                            <input type="text" id="product-name" name="name" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="product-category">Category</label>
+                            <select id="product-category" name="category" required>
+                                <option value="" disabled selected>Select a category...</option>
+                                <option value="Normal">Normal (Grocery, Meds)</option>
+                                <option value="Seasonal">Seasonal (Fruits, Veg)</option>
+                                <option value="Derived">Derived (By-products)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="original-price">Original Price ($)</label>
+                            <input type="number" id="original-price" name="original_price" step="0.01" min="0" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="discount-price">Discounted Price ($)</label>
+                            <input type="number" id="discount-price" name="discounted_price" step="0.01" min="0" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="product-quantity">Quantity</label>
+                            <input type="number" id="product-quantity" name="quantity" min="1" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="expiry-date">Expiry Date</label>
+                            <input type="date" id="expiry-date" name="expiry_date" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="product-description">Description</label>
+                        <textarea id="product-description" name="description" rows="4" placeholder="Enter product description (optional)"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="product-image">Product Image</label>
+                        <input type="file" id="product-image" name="product_image" accept="image/*">
+                        <small class="file-help">Choose an image file (JPG, PNG, GIF). Max size: 5MB</small>
+                    </div>
+                    <p id="form-error" class="error-text"></p>
+                    <button type="submit" class="submit-btn">Add Product to Store</button>
+                </form>
+            </section>
+            
+            <section id="settings" class="content-section">
+                <h2>Settings</h2>
+                <p>Manage your account and payment details here.</p>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="seller_dashboard.js"></script>
+</body>
+</html>

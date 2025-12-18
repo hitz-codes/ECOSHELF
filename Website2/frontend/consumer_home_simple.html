@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSelf - Simple Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin: 20px 0; }
+        .product-card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+        .add-to-cart-btn { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .add-to-cart-btn:hover { background: #0056b3; }
+        .cart-info { position: fixed; top: 10px; right: 10px; background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ddd; }
+        .loading { text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <h1>EcoSelf - Simple Cart Test</h1>
+    
+    <div class="cart-info">
+        <div>Cart Items: <span id="cart-count">0</span></div>
+        <div>Total: $<span id="cart-total">0.00</span></div>
+        <button onclick="showCartDetails()">Show Cart</button>
+        <button onclick="clearCart()">Clear</button>
+    </div>
+    
+    <div id="cart-details" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; display: none;">
+        <h3>Cart Contents:</h3>
+        <div id="cart-items"></div>
+    </div>
+    
+    <div class="product-grid" id="product-grid">
+        <div class="loading">Loading products...</div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        // Simple cart implementation
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let products = [];
+        
+        function updateCartDisplay() {
+            const countSpan = document.getElementById('cart-count');
+            const totalSpan = document.getElementById('cart-total');
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            countSpan.textContent = totalItems;
+            totalSpan.textContent = totalPrice.toFixed(2);
+            
+            console.log('Cart updated:', cart);
+        }
+        
+        function addToCart(product) {
+            console.log('Adding to cart:', product.name);
+            
+            const existingItem = cart.find(item => item.id === product._id);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product._id,
+                    name: product.name,
+                    price: product.discounted_price,
+                    image: product.image_url,
+                    quantity: 1,
+                    seller: product.seller_name
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
+        }
+        
+        function showCartDetails() {
+            const detailsDiv = document.getElementById('cart-details');
+            const itemsDiv = document.getElementById('cart-items');
+            
+            if (cart.length === 0) {
+                itemsDiv.innerHTML = '<p>Cart is empty</p>';
+            } else {
+                itemsDiv.innerHTML = cart.map(item => 
+                    `<div>${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}</div>`
+                ).join('');
+            }
+            
+            detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function clearCart() {
+            cart = [];
+            localStorage.removeItem('cart');
+            updateCartDisplay();
+            document.getElementById('cart-details').style.display = 'none';
+        }
+        
+        async function loadProducts() {
+            const productGrid = document.getElementById('product-grid');
+            
+            try {
+                console.log('Loading products...');
+                const data = await API.getProducts({ limit: 6 });
+                products = data.products;
+                
+                console.log('Loaded products:', products.length);
+                
+                if (products.length === 0) {
+                    productGrid.innerHTML = '<p>No products available</p>';
+                    return;
+                }
+                
+                productGrid.innerHTML = '';
+                
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.innerHTML = `
+                        <h3>${product.name}</h3>
+                        <p>Price: $${product.discounted_price.toFixed(2)}</p>
+                        <p>Seller: ${product.seller_name}</p>
+                        <p>Stock: ${product.quantity}</p>
+                        <button class="add-to-cart-btn" data-product-id="${product._id}">
+                            Add to Cart
+                        </button>
+                    `;
+                    
+                    // Add event listener directly
+                    const button = productCard.querySelector('.add-to-cart-btn');
+                    button.addEventListener('click', () => {
+                        console.log('Button clicked for product:', product.name);
+                        addToCart(product);
+                        
+                        // Visual feedback
+                        const originalText = button.textContent;
+                        button.textContent = 'Added!';
+                        button.style.backgroundColor = '#28a745';
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.style.backgroundColor = '#007bff';
+                        }, 1000);
+                    });
+                    
+                    productGrid.appendChild(productCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                productGrid.innerHTML = `<p>Error loading products: ${error.message}</p>`;
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded, checking auth...');
+            
+            if (!isLoggedIn()) {
+                document.body.innerHTML = '<h1>Please login first</h1><a href="login.html">Login</a>';
+                return;
+            }
+            
+            const user = getUser();
+            if (!user || user.role !== 'buyer') {
+                document.body.innerHTML = '<h1>Please login as a buyer</h1><a href="login.html">Login</a>';
+                return;
+            }
+            
+            console.log('User authenticated:', user.name);
+            updateCartDisplay();
+            loadProducts();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Product Images</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .product { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .image-test { display: flex; gap: 15px; align-items: center; margin: 10px 0; }
+        .image-test img { width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; }
+        .url-info { font-family: monospace; background: #f5f5f5; padding: 5px; border-radius: 3px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Product Images</h1>
+    
+    <div>
+        <button onclick="debugProducts()">Load & Debug Products</button>
+        <button onclick="testImageUrls()">Test Image URLs</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script src="api.js"></script>
+    <script>
+        async function debugProducts() {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                resultsDiv.innerHTML = '<p>Loading products...</p>';
+                
+                const data = await API.getProducts({ limit: 10 });
+                
+                if (!data.products || data.products.length === 0) {
+                    resultsDiv.innerHTML = '<p class="warning">No products found</p>';
+                    return;
+                }
+                
+                let html = `<h3>Found ${data.products.length} products:</h3>`;
+                
+                data.products.forEach((product, index) => {
+                    const hasImage = product.image_url && product.image_url.trim() !== '';
+                    const imageUrl = hasImage ? 
+                        `${API_BASE_URL.replace('/api', '')}${product.image_url}` : 
+                        'https://via.placeholder.com/100/E2E3E5/6C757D?text=No+Image';
+                    
+                    html += `
+                        <div class="product">
+                            <h4>${product.name} (${product.category})</h4>
+                            
+                            <div class="image-test">
+                                <img src="${imageUrl}" alt="${product.name}" 
+                                     onerror="this.style.border='2px solid red'; this.nextElementSibling.innerHTML='❌ Failed to load';">
+                                <div>
+                                    <strong>Status:</strong> <span class="${hasImage ? 'success' : 'warning'}">${hasImage ? '✅ Has Image' : '⚠️ No Image'}</span><br>
+                                    <strong>Raw image_url:</strong> <span class="url-info">${product.image_url || 'null/empty'}</span><br>
+                                    <strong>Full URL:</strong> <span class="url-info">${imageUrl}</span><br>
+                                    <strong>Seller:</strong> ${product.seller_name}<br>
+                                    <strong>Price:</strong> $${product.discounted_price}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Debug error:', error);
+                resultsDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function testImageUrls() {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                resultsDiv.innerHTML = '<p>Testing image URL construction...</p>';
+                
+                const apiBaseUrl = API_BASE_URL;
+                const backendBaseUrl = apiBaseUrl.replace('/api', '');
+                
+                let html = `
+                    <h3>URL Construction Test:</h3>
+                    <div class="url-info">
+                        <strong>API_BASE_URL:</strong> ${apiBaseUrl}<br>
+                        <strong>Backend Base URL:</strong> ${backendBaseUrl}<br>
+                        <strong>Sample image path:</strong> /uploads/products/sample.jpg<br>
+                        <strong>Constructed URL:</strong> ${backendBaseUrl}/uploads/products/sample.jpg
+                    </div>
+                `;
+                
+                // Test if backend is accessible
+                try {
+                    const response = await fetch(backendBaseUrl);
+                    html += `<p class="success">✅ Backend accessible at ${backendBaseUrl}</p>`;
+                } catch (error) {
+                    html += `<p class="error">❌ Backend not accessible: ${error.message}</p>`;
+                }
+                
+                // Test uploads directory
+                try {
+                    const response = await fetch(`${backendBaseUrl}/uploads/`);
+                    html += `<p class="success">✅ Uploads directory accessible</p>`;
+                } catch (error) {
+                    html += `<p class="error">❌ Uploads directory not accessible: ${error.message}</p>`;
+                }
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Auto-run on load
+        document.addEventListener('DOMContentLoaded', () => {
+            debugProducts();
+        });
+    </script>
+</body>
+</html>
